@@ -1,9 +1,8 @@
 #ifndef _PROTOCOL_H_
 #define _PROTOCOL_H_
-#include <list>
 #include "pool.h"
 
-using namespace std;
+//using namespace std;
 
 /*边界值*/
 #define NAMESIZE     45
@@ -15,16 +14,19 @@ using namespace std;
 #define USRIDSIZE    11
 
 #define PROTOCOL_BASE 10
+
 //------------------应答和心跳包--------------------------
 #define PROTOCOL_SERVER_RS 	 			PROTOCOL_BASE + 1
 #define PROTOCOL_CLIENT_RS 	 			PROTOCOL_BASE + 2
 #define PROTOCOL_ONLINE		 			PROTOCOL_BASE + 3
 #define PROTOCOL_HEART 		 			PROTOCOL_BASE + 4
+
 //------------------注册、登录----------------------------
 #define PROTOCOL_REGISTER_RQ 			PROTOCOL_BASE + 5
 #define PROTOCOL_REGISTER_RS 			PROTOCOL_BASE + 6
 #define PROTOCOL_LOGIN_RQ 	 			PROTOCOL_BASE + 7
 #define PROTOCOL_LOGIN_RS 	 			PROTOCOL_BASE + 8
+
 //------------------搜索、添加、删除好友------------------
 #define PROTOCOL_SEARCH_USER_RQ			PROTOCOL_BASE + 9	//搜索好友
 #define PROTOCOL_SEARCH_USER_RS			PROTOCOL_BASE + 10
@@ -32,6 +34,7 @@ using namespace std;
 #define PROTOCOL_USER_ADD_RS			PROTOCOL_BASE + 12
 #define PROTOCOL_USER_DELETE_RQ			PROTOCOL_BASE + 13	//删除好友
 #define PROTOCOL_USER_DELETE_RS			PROTOCOL_BASE + 14
+
 //--------------------好友及聊天----------------------
 #define PROTOCOL_SEND_MSG_RQ			PROTOCOL_BASE + 19	//发送消息
 #define PROTOCOL_SEND_MSG_RS			PROTOCOL_BASE + 20
@@ -81,7 +84,7 @@ typedef struct
 	packtype_t packtype;  
 }heart_t;
 
-struct client_data 		  //参数封装
+typedef struct client_data //参数封装
 {
 	char 		read_buf[BUFSIZE];
 	char 		write_buf[BUFSIZE];
@@ -93,7 +96,7 @@ struct client_data 		  //参数封装
 	socklen_t 	src_addrlen;
 	struct sockaddr_in dest_addr;
 	socklen_t 	dest_addrlen;
-};
+}client_data;
 
 
 /*注册请求包*/

@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++
-INCLUDE=-I../../include -I/usr/local/mysql/include
+INCLUDE=-I../../include -I/usr/include/mysql/
 CFLAGS= -g -Wall -c $(INCLUDE)
 CPPFLAGS=-E -D
 CXXFLAGS=
@@ -16,7 +16,7 @@ $(LIB):$(DES)
 	$(AR) rcs $@ $^
 	mv $@ ../../lib
 $(DES):$(SRC)
-	$(CXX) $(CFLAGS) $^
+	$(CC) -std=c99 $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"

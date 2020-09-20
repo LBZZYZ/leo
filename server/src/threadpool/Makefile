@@ -23,7 +23,7 @@ $(LIB):$(DES)
 
 
 $(DES):$(SRC)
-	$(CXX) $(CFLAGS) $^
+	$(CC) $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"

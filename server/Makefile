@@ -1,4 +1,4 @@
-SUBDIR = ./src/net ./src/kernel ./src/threadpool ./src/mysql ./src
+SUBDIR = ./src/net ./src/kernel ./src/threadpool ./src/mysql ./src ./src/ccl-0.1.1
 
 .PHONY:subdirs $(SUBDIR) clean
 subdirs:$(SUBDIR)

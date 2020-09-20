@@ -1,6 +1,6 @@
 #include "kernel.h"
 #include "net.h"
-#include "CMySql.h"    /*注册、登录等使用的头文件*/
+//#include "CMySql.h"    /*注册、登录等使用的头文件*/
 #include <stdlib.h>
 #include "mylist.h"
 #include "err_sys.h"
@@ -23,21 +23,25 @@ static void epoll_add_event(int epollfd,int fd)
 
 int insert_online_user(long long llv_Id,long long llv_Ip,long long llv_Port)
 {
-	if(llv_Id == 0 || llv_Ip == 0 || llv_Port == 0)return -1;	
+	if(llv_Id == 0 || llv_Ip == 0 || llv_Port == 0)
+        {
+            return -1;	
+        }
+
 	char lszv_Sql[BUFSIZE];
 	bzero(lszv_Sql,sizeof(lszv_Sql));
+
 	/*把id、ip、port写入usr_online表*/
-	sprintf(lszv_Sql,"insert into usr_online value(%lld,%lld,%lld);",llv_Id,llv_Ip,llv_Port);
+	sprintf(lszv_Sql, "insert into usr_online \
+                           value(%lld,%lld,%lld);", llv_Id, llv_Ip, llv_Port);
 
-	/*数据库连接*/
-	CMySql mysql;
-	if(false == (mysql.ConnectMySql("localhost","root","libingzhi5241.","usrinfo")))
-	{
-		printf("CONNECTMYSQL\n");
-		return -1;
-	}
+        //引入数据库连接池全局变量
+        extern SQL_CONN_POOL *sql_conn_pool;
 
-	if(false == mysql.UpdateMySql(lszv_Sql))
+	//从数据库连接池拿取链接
+	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+
+	if(false == mysql_update(mysql_connect->mysql_sock,lszv_Sql))
 	{
 		printf("UPDATEMYSQL");
 		return -1;
@@ -59,7 +63,7 @@ void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
 		{PROTOCOL_SEARCH_USER_RQ,searchuser},
 		{PROTOCOL_USER_ADD_RQ,adduser},
 		{PROTOCOL_USER_ADD_RS,adduser_rs},
-		{PROTOCOL_SEND_MSG_RQ,sendmsg},
+		{PROTOCOL_SEND_MSG_RQ,send_msg},
 		{PROTOCOL_GET_FRIEND_LIST_RQ,get_friend_list},
 		{0,0}
 	};
@@ -102,37 +106,42 @@ void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
 /*注册*/
 int registe(void *clientdata)
 {
-	printf("(1)注册\n");
 
 	struct client_data *c_data = (struct client_data*)clientdata;
 	c_data->w_length = sizeof(registe_rs_t);
 
 	//获取注册请求包
 	registe_rq_t *rq = (registe_rq_t *)(c_data->read_buf);
+
 	//定义注册回复包
 	registe_rs_t rs;
+
 	//引入数据库连接池全局变量
 	extern SQL_CONN_POOL *sql_conn_pool;
+
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+
 	//数据库插入语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
 	printf("BIRTH:%s\n",rq->birth);
 
 	//解析select语句
-	sprintf(sql,"select usr_number from usrinfos where usr_number = '%s'",rq->usrid);
+	sprintf(sql, "select usr_number from usrinfos \
+                      where usr_number = '%s'", rq->usrid);
 	//向数据库查询
-	list<char*> lst;
-	mysql_select(mysql_connect->mysql_sock,sql,&lst);
+	list_t lst;
+	mysql_select(mysql_connect->mysql_sock, sql, &lst);
 
 
-	if(lst.empty() == true)
+	if(lst_empty(&lst) == true)
 	{
-
 		//解析insert语句
-		sprintf(sql,"insert into usrinfos(usr_number,usr_name,usr_password,usr_age,usr_sex,usr_birth) values('%s','%s','%s',%d,'%c','%s');",
-				rq->usrid,rq->usrname,rq->password,18,rq->sex,rq->birth);
+		sprintf(sql,"insert into usrinfos(usr_number,usr_name,usr_password,\
+                             usr_age,usr_sex,usr_birth) values('%s','%s','%s',%d,'%c','%s');",\
+				rq->usrid, rq->usrname, rq->password, 18, rq->sex, rq->birth);
+
 		//使用新的数据库连接向数据库插入数据
 		if(true == mysql_update(mysql_connect->mysql_sock,sql))rs.result = SUCCEED;
 	}
@@ -174,6 +183,7 @@ int login(void *clientdata)
 
 	/*获取登录请求包*/
 	login_rq_t *rq = (login_rq_t*)c_data->read_buf;
+	printf("id: %s,pwd:%s\n",rq->usrid,rq->password);
 
 
 	/*构造登录回复包*/
@@ -190,7 +200,7 @@ int login(void *clientdata)
 	//构造select语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
-	snprintf(sql,sizeof(sql),"select usr_password from usrinfos where usrid = '%s'",rq->usrid);
+	snprintf(sql,sizeof(sql),"select usr_password from usrinfos where usrid = '280761575'");
 
 	//引入数据库连接池全局变量
 	extern SQL_CONN_POOL *sql_conn_pool;
@@ -199,21 +209,32 @@ int login(void *clientdata)
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 	if(mysql_connect == NULL)printf("TAT\n");
 
-	list<char*> lst;
+	list_t lst;
 	printf("QAQ\n");
-	if(false == mysql_select(mysql_connect->mysql_sock,sql,&lst))rs.result = FAILED;
-	if(lst.empty() == true)rs.result = FAILED;
-	if(0 == strcmp(rq->password,lst.front()))
+	if(false == mysql_select(mysql_connect->mysql_sock,sql,&lst)){rs.result = SUCCEED;return 0;}
+	printf("执行\n");
+	if(lst_empty(&lst) == true)
 	{
-		rs.result = SUCCEED;
-		c_rs->result = rs.result;
-		printf("success\n");
+		rs.result = FAILED;
+		printf("没匹配到密码\n");
 	}
+	else
+	{
+		printf("匹配到了\n");
+		if(0 != strcmp(rq->password,lst.front()))
+		{
+			printf("匹配success\n");
+			rs.result = SUCCEED;
+			c_rs->result = rs.result;
+			printf("success\n");
+		}
+	}
+
 	/*把上线用户插入usr_online表*/
 	/*if(-1 == insert_online_user(rq->usrid,c_data->src_addr.sin_addr.s_addr,c_data->src_addr.sin_port))
-	{
-		printf("INSERT ONLINE USER\n");
-	}*/
+	  {
+	  printf("INSERT ONLINE USER\n");
+	  }*/
 
 	epoll_add_event(c_data->epollfd,c_data->fd);
 
@@ -225,6 +246,7 @@ int login(void *clientdata)
 int searchuser(void *clientdata)
 {
 	printf("查找好友\n");
+
 	/*获取查找好友请求包*/
 	struct client_data *c_data = (struct client_data*)clientdata;
 	search_rq_t *s_rq = (search_rq_t*)c_data->read_buf;
@@ -370,7 +392,7 @@ int adduser_rs(void *clientdata)
 }
 
 /*消息转发*/
-int sendmsg(void* clientdata)
+int send_msg(void* clientdata)
 {
 	printf("消息转发\n");
 	if(NULL == clientdata)exit(EXIT_FAILURE);
@@ -423,7 +445,7 @@ int get_friend_list(void* clientdata)
 
 	/*数据库连接*/
 	CMySql mysql;
-	if(false == (mysql.ConnectMySql("localhost","root","libingzhi5241.","usrinfo")))
+	if(false == (mysql.ConnectMySql("localhost","root","libingzhi5241.","im")))
 	{
 		printf("CONNECTMYSQL\n");
 		return -1;

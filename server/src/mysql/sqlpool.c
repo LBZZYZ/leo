@@ -6,11 +6,13 @@ SQL_CONN_POOL *sql_pool_create(int connect_pool_number,const char ip[],const int
                                const char db_name[],const char user[],const char passwd[])
 {
    SQL_CONN_POOL *sp = NULL;
+
    if (connect_pool_number < 1)
    {
       printf("connect_pool_number < 1. defalut 1 \n");
       connect_pool_number = 1;
    }
+
    if ((sp=(SQL_CONN_POOL *)malloc(sizeof(SQL_CONN_POOL))) == NULL)
    {
       printf("malloc SQL_CONN_POOL error.\n");
@@ -75,6 +77,7 @@ int create_db_connect(SQL_CONN_POOL *sp, SQL_NODE *node)
      res = 1;
      break;
    }
+   printf("ip:%d,port:%d,usr:%s,pwd:%s\n",sp->ip, sp->port, sp->user, sp->passwd);
    node->used = 0;
    node->sql_state = DB_CONN;
    //设置自动连接开启

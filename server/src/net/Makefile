@@ -22,7 +22,7 @@ $(LIB):$(DES)
 	mv $@ ../../lib
 
 $(DES):$(SRC)
-	$(CXX) $(CFLAGS) $^
+	$(CC) -std=c99 $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"

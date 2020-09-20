@@ -1,4 +1,5 @@
 #include "net.h"
+#include "protocol.h"
 #include "err_sys.h"
 #include <stdio.h>
 
@@ -132,7 +133,7 @@ void net_open(pool_t *pool)
 				server_rs_t rs;
 				rs.packtype = PROTOCOL_SERVER_RS;
 				rs.num = rq->packnum;
-				send_udp_data(udpfd,(const char*)&rs,sizeof(rs),(struct sockaddr*)&usrs[udpfd].src_addr,sizeof(sockaddr_in));
+				send_udp_data(udpfd,(const char*)&rs,sizeof(rs),(struct sockaddr*)&usrs[udpfd].src_addr,sizeof(struct sockaddr_in));
 
 				printf("读完\n");
 				/*向任务队列中添加任务*/

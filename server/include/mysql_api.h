@@ -1,10 +1,7 @@
 #pragma once
-#include <iostream>
-#include <mysql.h>
-#include <list>
 
-using namespace std;
+#include </usr/include/mysql/mysql.h>
+#include "mylist.h"
 
-bool mysql_select(MYSQL *sock,const char* sql,list<char*> *list);
+bool mysql_select(MYSQL *sock,const char* sql,list_t *list);
 bool  mysql_update(MYSQL *sock,const char* sql);
-

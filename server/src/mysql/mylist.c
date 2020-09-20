@@ -1,5 +1,4 @@
 #include "mylist.h"
-#include <stdio.h>
 
 
 bool list_init(list_t **list)
@@ -47,12 +46,10 @@ char *lst_pop(list_t *list)
 {
 	if(list->front == list->rear)
 	{
-		printf("进来过马?\n");
 		return NULL;
 	}
 	if(list->front->next == NULL)
 	{
-		printf("进来过马?\n");
 		return NULL;
 	}
 	node_t *tmp = list->front->next;
@@ -81,4 +78,14 @@ bool lst_destroy(list_t **list)
 	free(*list);
 	(*list) = NULL;
 	return true;
+}
+
+bool lst_empty(list_t *list)
+{
+        if(list == NULL)
+        {
+                return true;
+        }
+        
+        return false;
 }

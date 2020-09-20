@@ -21,7 +21,7 @@ $(LIB):$(DES)
 	mv $@ ../../lib
 
 $(DES):$(SRC)
-	$(CXX) $(CFLAGS) $^
+	$(CC) $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"

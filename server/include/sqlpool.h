@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include </usr/local/mysql/include/mysql.h>
+#include </usr/include/mysql/mysql.h>
 #include <pthread.h>
 
 #define IP_LEN      15

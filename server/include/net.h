@@ -11,17 +11,16 @@
 #include "kernel.h"
 #include "pool.h"
 
-#define	TCPSERVERIP  	"123.221.213.3"
-//#define	TCPSERVERIP  	"47.94.161.78"
-#define UDPSERVERIP     "172.24.17.182"
-#define	TCPSERVERPORT	22222
-#define	UDPSERVERPORT	33333
-#define	TCPCLIENTPORT	22222
-#define	UDPCLIENTPORT	33333
-#define	LISTENSIZE	    128
+#define	TCPSERVERIP  	"192.168.0.188"
+#define UDPSERVERIP     "192.168.0.188"
+#define	TCPSERVERPORT	8000
+#define	UDPSERVERPORT	4567
+#define	TCPCLIENTPORT	8000
+#define	UDPCLIENTPORT	4567
+#define	LISTENSIZE      128
 #define	IPSIZE	        16
 #define MAX_EVENTS      100
-#define FDSIZE 			65535
+#define FDSIZE 		65535
 
 /*网络初始化*/
 int tcp_init();
