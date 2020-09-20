@@ -7,6 +7,10 @@
 #include "sqlpool.h"
 #include "mysql_api.h"
 
+
+extern SQL_CONN_POOL *sql_conn_pool;
+
+
 /*添加epoll监听事件*/
 static void epoll_add_event(int epollfd,int fd)
 {
@@ -17,8 +21,6 @@ static void epoll_add_event(int epollfd,int fd)
 	{
 		err_sys("EPOLL_CTL_IN",EXIT_FAILURE);
 	}
-
-
 }
 
 int insert_online_user(long long llv_Id,long long llv_Ip,long long llv_Port)
@@ -35,8 +37,7 @@ int insert_online_user(long long llv_Id,long long llv_Ip,long long llv_Port)
 	sprintf(lszv_Sql, "insert into usr_online \
                            value(%lld,%lld,%lld);", llv_Id, llv_Ip, llv_Port);
 
-        //引入数据库连接池全局变量
-        extern SQL_CONN_POOL *sql_conn_pool;
+
 
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
@@ -106,6 +107,12 @@ void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
 /*注册*/
 int registe(void *clientdata)
 {
+	//数据库插入语句
+	char sql[MYSQLSIZE];
+	bzero(sql,sizeof(sql));
+
+	list_t *lst;
+	list_init(&lst);
 
 	struct client_data *c_data = (struct client_data*)clientdata;
 	c_data->w_length = sizeof(registe_rs_t);
@@ -116,31 +123,22 @@ int registe(void *clientdata)
 	//定义注册回复包
 	registe_rs_t rs;
 
-	//引入数据库连接池全局变量
-	extern SQL_CONN_POOL *sql_conn_pool;
-
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
-
-	//数据库插入语句
-	char sql[MYSQLSIZE];
-	bzero(sql,sizeof(sql));
-	printf("BIRTH:%s\n",rq->birth);
 
 	//解析select语句
 	sprintf(sql, "select usr_number from usrinfos \
                       where usr_number = '%s'", rq->usrid);
+
 	//向数据库查询
-	list_t lst;
-	mysql_select(mysql_connect->mysql_sock, sql, &lst);
+	mysql_select(mysql_connect->mysql_sock, sql, lst);
 
-
-	if(lst_empty(&lst) == true)
+	if(lst_empty(lst) == true)
 	{
 		//解析insert语句
 		sprintf(sql,"insert into usrinfos(usr_number,usr_name,usr_password,\
-                             usr_age,usr_sex,usr_birth) values('%s','%s','%s',%d,'%c','%s');",\
-				rq->usrid, rq->usrname, rq->password, 18, rq->sex, rq->birth);
+                    usr_age,usr_sex,usr_birth) values('%s','%s','%s',%d,'%c','%s');",\
+				    rq->usrid, rq->usrname, rq->password, 18, rq->sex, rq->birth);
 
 		//使用新的数据库连接向数据库插入数据
 		if(true == mysql_update(mysql_connect->mysql_sock,sql))rs.result = SUCCEED;
@@ -149,10 +147,9 @@ int registe(void *clientdata)
 	{
 		rs.result = FAILED;
 	}
+
 	//归还数据库连接
 	release_node(sql_conn_pool,mysql_connect);
-
-
 
 	/*构造回复包*/
 	rs.packtype = PROTOCOL_REGISTER_RS;
@@ -201,9 +198,6 @@ int login(void *clientdata)
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
 	snprintf(sql,sizeof(sql),"select usr_password from usrinfos where usrid = '280761575'");
-
-	//引入数据库连接池全局变量
-	extern SQL_CONN_POOL *sql_conn_pool;
 
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
@@ -268,31 +262,26 @@ int searchuser(void *clientdata)
 	snprintf(mysql_statement,sizeof(mysql_statement),"select usrname,birth,sex from usrinfos where usrid = %lld",s_rq->searchid);
 	printf("ID:%lld\n",s_rq->searchid);
 
-	CMySql mysql;
-	if(false == (mysql.ConnectMySql("localhost","root","libingzhi5241.","usrinfo")))
-	{
+	
+	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 
-		printf("connectmysql\n");
-		return -1;
-	}
-	list_t *list = NULL;
-	list_init(&list);
-	printf("添加好友QAQ\n");
-	if(false == (mysql.SelectMySql(mysql_statement,list)))
+	list_t lst;
+    
+	if(false == mysql_select(mysql_connect->mysql_sock,mysql_statement,&list))
 	{
 		printf("select failed\n");
 		return -1;
 	}
 	char *str = NULL;
 	printf("name\n");
-	str = lst_pop(list);
+	str = lst_pop(&lst);
 	printf("name:%s\n",str);
 	strncpy(s_rs->s_name,str,strlen(str));
 	printf("name:%s\n",str);
-	str = lst_pop(list);
+	str = lst_pop(&lst);
 	strncpy(s_rs->s_birth,str,strlen(str));
 	printf("birth:%s\n",str);
-	str = lst_pop(list);
+	str = lst_pop(&lst);
 	s_rs->s_sex = *str;
 	epoll_add_event(c_data->epollfd,c_data->fd);
 
@@ -302,16 +291,17 @@ int searchuser(void *clientdata)
 
 static long long GetClientIp(long long llv_Id)
 {
-	CMySql mysql;
-	mysql.ConnectMySql("localhost","root","libingzhi5241.","usrinfo");
+	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+
 	list_t *lpv_List = NULL;
 	list_init(&lpv_List);
 	char lszv_Sql[BUFSIZE];
 	bzero(lszv_Sql,sizeof(lszv_Sql));
 	sprintf(lszv_Sql,"select ip from usr_online where id = %lld;",llv_Id);
-	mysql.SelectMySql(lszv_Sql,lpv_List);
+	mysql_select(mysql_connect->mysql_sock,lszv_Sql,lpv_List);
 	return atoi(lst_pop(lpv_List));
 }
+
 int adduser(void *clientdata)
 {
 	printf("添加好友\n");
@@ -325,16 +315,6 @@ int adduser(void *clientdata)
 	llv_Ip = GetClientIp(lpv_Addrq->searchid);
 	printf("lpv_Addrq->searchid:%lld\n",lpv_Addrq->searchid);
 
-	/*if(-1 == test_is_alive(lpv_Clientdata->fd,llv_Ip,htons(8000)))
-	  {
-	//客户端离线
-	//将代发送数据写入离线数据表
-	printf("client offline\n");
-	return 0;
-	}
-	else
-	{*/
-	//客户端在线
 	add_rq_t *p = (add_rq_t*)lpv_Clientdata->write_buf;
 	p->usrid = lpv_Addrq->usrid;
 	p->searchid = lpv_Addrq->searchid;
@@ -442,22 +422,19 @@ int get_friend_list(void* clientdata)
 	getfriendlist_rs_t rs;
 	bzero(&rs,sizeof(rs));
 	rs.packtype = PROTOCOL_GET_FRIEND_LIST_RS;
+    
+    SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 
-	/*数据库连接*/
-	CMySql mysql;
-	if(false == (mysql.ConnectMySql("localhost","root","libingzhi5241.","im")))
-	{
-		printf("CONNECTMYSQL\n");
-		return -1;
-	}
 	char id_statement[MYSQLSIZE] = {0};
 	char name_statement[MYSQLSIZE] = {0};
 	snprintf(id_statement,MYSQLSIZE,"select friend_id from usr_friends where user_id = %lld union all select user_id from usr_friends where friend_id = %lld;",llv_Senderid,llv_Senderid);
+	
 	list_t *lpv_Idlist = NULL;
 	list_t *lpv_Namelist = NULL;
 	list_init(&lpv_Idlist);
 	list_init(&lpv_Namelist);
-	mysql.SelectMySql(id_statement,lpv_Idlist);
+	
+	mysql_select(mysql_connect->mysql_sock,id_statement,lpv_Idlist);
 	if(lpv_Idlist == NULL)
 	{
 		printf("list empty\n");
@@ -467,10 +444,9 @@ int get_friend_list(void* clientdata)
 	char * str = NULL;
 	char * lsv_Name = NULL;
 	int i = 0;
-	printf("0\n");
+
 	while((str = lst_pop(lpv_Idlist)) != NULL/*&& (lsv_Name = lst_pop(lpv_Namelist) != NULL)*/)
 	{
-		printf("QAQ\n");
 		lsv_Id = atoll(str);
 		rs.friendlistmsg[i].id = lsv_Id;
 		/*通过ID查询用户名*/
@@ -480,11 +456,8 @@ int get_friend_list(void* clientdata)
 		strncpy(rs.friendlistmsg[i].name,lsv_Name,45);
 		printf("%s\n",rs.friendlistmsg[i-1].name);
 		++i;
-
 	}
 
-
-	printf("i:%d\n",i);
 	rs.friendnum = i;
 	memcpy(lpv_Clientdata->write_buf,(char*)&rs,8+i*sizeof(friendlistmsg_t));
 	lpv_Clientdata->w_length = 8+ i*sizeof(friendlistmsg_t);
