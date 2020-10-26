@@ -8,7 +8,6 @@
 #include "mysql_api.h"
 
 
-extern SQL_CONN_POOL *sql_conn_pool;
 
 
 /*添加epoll监听事件*/
@@ -125,6 +124,7 @@ int registe(void *clientdata)
 
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+	printf("mysql error\n");
 
 	//解析select语句
 	sprintf(sql, "select usr_number from usrinfos \
@@ -181,6 +181,10 @@ int login(void *clientdata)
 	/*获取登录请求包*/
 	login_rq_t *rq = (login_rq_t*)c_data->read_buf;
 	printf("id: %s,pwd:%s\n",rq->usrid,rq->password);
+	if(sql_conn_pool==NULL)
+             printf("mysql error\n");
+	else
+             printf("kernel.c:%p\n",sql_conn_pool);
 
 
 	/*构造登录回复包*/
@@ -203,7 +207,8 @@ int login(void *clientdata)
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 	if(mysql_connect == NULL)printf("TAT\n");
 
-	list_t lst;
+	list_t *lst;
+        list_init(&lst);
 	printf("QAQ\n");
 	if(false == mysql_select(mysql_connect->mysql_sock,sql,&lst)){rs.result = SUCCEED;return 0;}
 	printf("执行\n");
@@ -215,7 +220,7 @@ int login(void *clientdata)
 	else
 	{
 		printf("匹配到了\n");
-		if(0 != strcmp(rq->password,lst.front()))
+		if(0 != strcmp(rq->password,lst_pop(lst)))
 		{
 			printf("匹配success\n");
 			rs.result = SUCCEED;
@@ -265,9 +270,10 @@ int searchuser(void *clientdata)
 	
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 
-	list_t lst;
+	list_t *lst;
+        list_init(&lst);
     
-	if(false == mysql_select(mysql_connect->mysql_sock,mysql_statement,&list))
+	if(false == mysql_select(mysql_connect->mysql_sock,mysql_statement,&lst))
 	{
 		printf("select failed\n");
 		return -1;
@@ -423,7 +429,7 @@ int get_friend_list(void* clientdata)
 	bzero(&rs,sizeof(rs));
 	rs.packtype = PROTOCOL_GET_FRIEND_LIST_RS;
     
-    SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+        SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
 
 	char id_statement[MYSQLSIZE] = {0};
 	char name_statement[MYSQLSIZE] = {0};
@@ -451,7 +457,7 @@ int get_friend_list(void* clientdata)
 		rs.friendlistmsg[i].id = lsv_Id;
 		/*通过ID查询用户名*/
 		snprintf(name_statement,MYSQLSIZE,"select usrname from usrinfos where usrid = %lld;",lsv_Id);
-		mysql.SelectMySql(name_statement,lpv_Namelist);
+		mysql_select(mysql_connect->mysql_sock,name_statement,lpv_Namelist);
 		lsv_Name = lst_pop(lpv_Namelist);
 		strncpy(rs.friendlistmsg[i].name,lsv_Name,45);
 		printf("%s\n",rs.friendlistmsg[i-1].name);
@@ -471,7 +477,7 @@ int test_is_alive(int fd,int ip,int port)
 	if(ip == 0)return -1;
 	heart_t heart;
 	heart.packtype = PROTOCOL_HEART;
-	sockaddr_in clientaddr;
+	struct sockaddr_in clientaddr;
 	bzero(&clientaddr,sizeof(clientaddr));
 	clientaddr.sin_family = AF_INET;
 	clientaddr.sin_port = port;

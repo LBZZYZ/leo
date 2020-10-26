@@ -4,7 +4,7 @@
 #include "sqlpool.h"
 #include <stdio.h>
 #include "/root/leo/server/src/ccl-0.1.1/ccl/ccl.h"
-
+       
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
         const char *mysql_db_name;
         const char *mysql_user;
         const char *mysql_user_pwd;
-        int   mysql_port;
+        int   _mysql_port;
         
         config.comment_char = '#';
         config.sep_char = '=';
@@ -27,15 +27,14 @@ int main()
         mysql_db_name = ccl_get(&config,"mysql_db_name");
         mysql_user = ccl_get(&config,"mysql_user");
         mysql_user_pwd = ccl_get(&config,"mysql_user_pwd");
-        mysql_port = atoi(ccl_get(&config,"mysql_port"));
-        
-        
-        
-        /**/
+        _mysql_port = atoi(ccl_get(&config,"mysql_port"));
+
         //创建数据库连接池
         SQL_CONN_POOL *sql_conn_pool = sql_pool_create(POOL_MAX_NUMBER, \
-                                       mysql_ip, mysql_port, mysql_db_name, mysql_user, mysql_user_pwd);
-	if(sql_conn_pool != NULL)
+                               mysql_ip, _mysql_port, mysql_db_name, mysql_user, mysql_user_pwd);
+	printf("leo.c:%p\n",sql_conn_pool);
+ 
+        if(sql_conn_pool != NULL)
         {
 	    printf("[1]数据库连接池初始化成功\n");
         }

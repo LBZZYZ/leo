@@ -3,6 +3,9 @@
 
 #include "protocol.h"    
 #include "mylist.h"
+#include "sqlpool.h"
+
+SQL_CONN_POOL *sql_conn_pool = NULL;
 
 void* deal_data(void*);    /*key is equal to ip or socket*/
 int registe(void*);

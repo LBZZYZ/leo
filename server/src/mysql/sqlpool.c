@@ -1,6 +1,5 @@
 #include "sqlpool.h"
 
-//sql_pool_create(POOL_MAX_NUMBER, "localhost", 3306, "ceshi", "root", "qc123456");  
 /*创建连接池*/
 SQL_CONN_POOL *sql_pool_create(int connect_pool_number,const char ip[],const int port, 
                                const char db_name[],const char user[],const char passwd[])

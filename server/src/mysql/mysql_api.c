@@ -1,5 +1,4 @@
 #include "mysql_api.h"
-#include <cstring>
 
 //select
 bool mysql_select(MYSQL *sock,const char* sql,list_t *lst)
@@ -33,7 +32,7 @@ bool mysql_select(MYSQL *sock,const char* sql,list_t *lst)
 		for(unsigned int i = 0;i < num_fields;i++)
 		{
 			if(record[i] == NULL)record[i] = (char*)"";
-			char *temp = new char[strlen(record[i])+1];
+			char *temp = (char*)malloc(sizeof(char)*(strlen(record[i])+1));
 			strcpy(temp,record[i]);
 			lst_push(lst,temp);
 		}
@@ -49,7 +48,6 @@ bool  mysql_update(MYSQL *sock,const char* sql)
 
 	if(mysql_query(sock,sql))
 	{
-		cout << mysql_error(sock);
 		return false;
 	}
 

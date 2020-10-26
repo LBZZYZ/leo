@@ -14,10 +14,9 @@ RDES=$(patsubst %.c,%.o,$(SRC)) $(patsubst %.cpp,%.o,$(SRC))
 DES=$(filter %.o,$(RDES))
 
 $(TARGET):$(DES)
-	gcc -o $(TARGET) $^ -L../lib -L/usr/lib64/mysql \
-	-lnet -lkernel -lmysql -lthreadpool -lpthread -lmysqlclient
+	gcc -o $(TARGET) $^ -L../lib -L/usr/lib64/mysql -lnet -lkernel -lmysql -lthreadpool -lpthread -lmysqlclient -lccl
 $(DES):$(SRC)
-	$(CXX) $(CFLAGS) $^
+	$(CC) $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"
