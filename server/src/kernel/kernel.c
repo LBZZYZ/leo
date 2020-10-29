@@ -8,7 +8,95 @@
 #include "mysql_api.h"
 
 
+#define KNL_ERROR -1
+#define KNL_OK     1
+typedef int KNL_RESULT;
+enum STRU_INIT
+{
+	E_STRU_INIT_REGISTER_RQ,
+	E_STRU_INIT_REGISTER_RS,
+	E_STRU_INIT_LOGIN_RQ,
+	E_STRU_INIT_LOGIN_RS,
+	E_STRU_INIT_SEARCH_USER_RQ,
+	E_STRU_INIT_SEARCH_USER_RS
 
+};
+
+/*
+	kernel utils
+*/
+KNL_RESULT knl_stru_init(void *stru, enum STRU_INIT args)
+{
+	switch (args)
+	{
+	case E_STRU_INIT_LOGIN_RS:
+		/* code */
+		break;
+	case E_STRU_INIT_REGISTER_RS:
+		/*构造回复包*/
+		stru = (registe_rs_t*)stru;
+		stru->packtype = PROTOCOL_REGISTER_RS;
+		stru->packnum = -1;
+		r_rs->result = FAILED;
+		break;
+	default:
+		break;
+	}
+
+}
+int test_is_alive(int fd,int ip,int port)
+{
+	if(ip == 0)return -1;
+	heart_t heart;
+	heart.packtype = PROTOCOL_HEART;
+	struct sockaddr_in clientaddr;
+	bzero(&clientaddr,sizeof(clientaddr));
+	clientaddr.sin_family = AF_INET;
+	clientaddr.sin_port = port;
+	clientaddr.sin_addr.s_addr = ip;
+	if(-1 == sendto(fd,(const char*)&heart,sizeof(heart),0,(const struct sockaddr*)&clientaddr,sizeof(clientaddr)))
+	{
+		//发送失败，代表客户端不在线
+		return -1;
+	}
+	printf("QAQ\tQAQ\n");
+
+	return 0;
+}
+
+/*
+	Check if this user is exist?
+*/
+KNL_RESULT knl_is_user_exist()
+{
+	list_t *lst;
+	list_init(&lst);
+
+	//数据库插入语句
+	char sql[MYSQLSIZE];
+	bzero(sql,sizeof(sql));
+
+
+	//从数据库连接池拿取链接
+	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
+	printf("mysql error\n");
+
+	//解析select语句
+	sprintf(sql, "select usrid from usrinfos \
+                      where usrid = '%s'", rq->usrid);
+
+	//向数据库查询
+	if(NULL == mysql_select(mysql_connect->mysql_sock, sql, lst))
+	{
+		return KNL_ERROR;
+	}
+	else
+	{
+		return KNL_OK;
+	}
+	
+
+}
 
 /*添加epoll监听事件*/
 static void epoll_add_event(int epollfd,int fd)
@@ -50,62 +138,17 @@ int insert_online_user(long long llv_Id,long long llv_Ip,long long llv_Port)
 }
 
 
-void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
-{
-	//解析参数包
-	struct client_data *c_data = (struct client_data*)clientdata;
 
-	/*包协议与函数指针建立的协议包映射表*/
-	protocol_map protocol_entry[] = 
-	{
-		{PROTOCOL_REGISTER_RQ,registe},
-		{PROTOCOL_LOGIN_RQ,login},
-		{PROTOCOL_SEARCH_USER_RQ,searchuser},
-		{PROTOCOL_USER_ADD_RQ,adduser},
-		{PROTOCOL_USER_ADD_RS,adduser_rs},
-		{PROTOCOL_SEND_MSG_RQ,send_msg},
-		{PROTOCOL_GET_FRIEND_LIST_RQ,get_friend_list},
-		{0,0}
-	};
-
-	/*定义一个指向协议映射表的指针*/
-	protocol_map *ptmp = protocol_entry;	
-
-	/*获取包类型*/
-	packtype_t *packtype = (packtype_t *)c_data;
-
-	while(1)
-	{
-		if(ptmp->packtype == *packtype)
-		{
-			/*协议包匹配成功,执行相应的处理函数*/
-			printf("match success\n");
-			printf("packtype:%d\n",*packtype);
-			(ptmp->pfun)(clientdata);
-			break;
-
-		}
-		else if(ptmp->packtype == 0 && ptmp->pfun == 0)
-		{
-			/*找不到对应的协议，可以向客户端发包告知错误*/
-			printf("match fail\n");
-			printf("packtype:%d\n",*packtype);
-			break;
-		}
-		else
-		{
-			printf("++ptmp\n");
-			++ptmp;
-		}
-	}
-	return NULL;
-
-}
 
 
 /*注册*/
 int registe(void *clientdata)
 {
+
+	//1.解析数据
+	//2.判定用户存在与否
+	//----a.存在：返回错误
+	//----b.不存在：注册新用户，返回Ok
 	//数据库插入语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
@@ -121,19 +164,13 @@ int registe(void *clientdata)
 
 	//定义注册回复包
 	registe_rs_t rs;
+	knl_stru_init((void*)&rs,E_STRU_INIT_REGISTER_RS);
 
 	//从数据库连接池拿取链接
 	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
-	printf("mysql error\n");
+	rs.packnum = rq->packnum;
 
-	//解析select语句
-	sprintf(sql, "select usr_number from usrinfos \
-                      where usr_number = '%s'", rq->usrid);
-
-	//向数据库查询
-	mysql_select(mysql_connect->mysql_sock, sql, lst);
-
-	if(lst_empty(lst) == true)
+	if(knl_is_user_exist() != KNL_OK)
 	{
 		//解析insert语句
 		sprintf(sql,"insert into usrinfos(usr_number,usr_name,usr_password,\
@@ -151,16 +188,9 @@ int registe(void *clientdata)
 	//归还数据库连接
 	release_node(sql_conn_pool,mysql_connect);
 
-	/*构造回复包*/
-	rs.packtype = PROTOCOL_REGISTER_RS;
-	rs.packnum = rq->packnum;
-	registe_rs_t *r_rs = (registe_rs_t*)c_data->write_buf;
-	r_rs->packnum = rs.packnum;
-	r_rs->result = rs.result;
-	r_rs->packtype = rs.packtype;
+	
+	memmove(c_data->write_buf,&rs,sizeof(rs));
 
-
-	r_rs->result = SUCCEED;
 	c_data->dest_addr.sin_family = c_data->src_addr.sin_family;
 	c_data->dest_addr.sin_port = c_data->src_addr.sin_port;
 	c_data->dest_addr.sin_addr.s_addr = c_data->src_addr.sin_addr.s_addr;
@@ -472,22 +502,58 @@ int get_friend_list(void* clientdata)
 	return 0;
 }
 
-int test_is_alive(int fd,int ip,int port)
-{
-	if(ip == 0)return -1;
-	heart_t heart;
-	heart.packtype = PROTOCOL_HEART;
-	struct sockaddr_in clientaddr;
-	bzero(&clientaddr,sizeof(clientaddr));
-	clientaddr.sin_family = AF_INET;
-	clientaddr.sin_port = port;
-	clientaddr.sin_addr.s_addr = ip;
-	if(-1 == sendto(fd,(const char*)&heart,sizeof(heart),0,(const struct sockaddr*)&clientaddr,sizeof(clientaddr)))
-	{
-		//发送失败，代表客户端不在线
-		return -1;
-	}
-	printf("QAQ\tQAQ\n");
 
-	return 0;
+
+
+
+void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
+{
+	//解析参数包
+	struct client_data *c_data = (struct client_data*)clientdata;
+
+	/*包协议与函数指针建立的协议包映射表*/
+	protocol_map protocol_entry[] = 
+	{
+		{PROTOCOL_REGISTER_RQ,registe},
+		{PROTOCOL_LOGIN_RQ,login},
+		{PROTOCOL_SEARCH_USER_RQ,searchuser},
+		{PROTOCOL_USER_ADD_RQ,adduser},
+		{PROTOCOL_USER_ADD_RS,adduser_rs},
+		{PROTOCOL_SEND_MSG_RQ,send_msg},
+		{PROTOCOL_GET_FRIEND_LIST_RQ,get_friend_list},
+		{0,0}
+	};
+
+	/*定义一个指向协议映射表的指针*/
+	protocol_map *ptmp = protocol_entry;	
+
+	/*获取包类型*/
+	packtype_t *packtype = (packtype_t *)c_data;
+
+	while(1)
+	{
+		if(ptmp->packtype == *packtype)
+		{
+			/*协议包匹配成功,执行相应的处理函数*/
+			printf("match success\n");
+			printf("packtype:%d\n",*packtype);
+			(ptmp->pfun)(clientdata);
+			break;
+
+		}
+		else if(ptmp->packtype == 0 && ptmp->pfun == 0)
+		{
+			/*找不到对应的协议，可以向客户端发包告知错误*/
+			printf("match fail\n");
+			printf("packtype:%d\n",*packtype);
+			break;
+		}
+		else
+		{
+			printf("++ptmp\n");
+			++ptmp;
+		}
+	}
+	return NULL;
+
 }
