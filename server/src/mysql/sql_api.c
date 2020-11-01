@@ -35,17 +35,16 @@ SQL_RESULT sql_api_is_user_online(void *args)
 
 }
 
-SQL_RESULT sql_api_is_user_exist(void *args)
+SQL_RESULT sql_api_is_user_exist(const char *userid)
 {
     list_t *lst;
 	list_init(&lst);
 
-	//数据库插入语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
 
-    sprintf(sql, "select usrid from usrinfos \
-                    where usrid = '%s'", 1);
+    sprintf(sql, "select usrid from usrinfos where usrid = '%s'", userid);
+    
     if(SQL_OK == mysql_select(sql,lst))
     {
         return SQL_API_OK;
