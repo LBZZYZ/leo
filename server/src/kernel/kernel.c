@@ -27,24 +27,30 @@ KNL_RESULT knl_stru_init(void *stru, enum STRU_INIT args)
 {
 	switch (args)
 	{
-	case E_STRU_INIT_LOGIN_RS:
-		/* code */
-		break;
-	case E_STRU_INIT_REGISTER_RS:
-		/*构造回复包*/
-		stru = (registe_rs_t*)stru;
-		stru->packtype = PROTOCOL_REGISTER_RS;
-		stru->packnum = -1;
-		r_rs->result = FAILED;
-		break;
-	default:
-		break;
+		case E_STRU_INIT_LOGIN_RS:
+		{
+			break;
+		}
+		case E_STRU_INIT_REGISTER_RS:
+		{
+			/*构造回复包*/
+			registe_rs_t *st = (registe_rs_t*)stru;
+			st->packtype = PROTOCOL_REGISTER_RS;
+			st->packnum = -1;
+			st->result = FAILED;
+			break;
+		}
+		default:
+		{
+			break;
+		}
 	}
+	return KNL_ERROR;
 
 }
 KNL_RESULT knl_is_user_online(int fd,int ip,int port)
 {
-	if(ip <= 0 || fd <= 0 | port <= 0)
+	if(ip <= 0 || fd <= 0 || port <= 0)
 	{
 		return KNL_INVALID;
 	}
@@ -138,7 +144,7 @@ KNL_RESULT knl_login(void *clientdata)
 	struct client_data *c_data = (struct client_data*)clientdata;
 
 	/*获取登录请求包*/
-	login_rq_t *rq = (login_rq_t*)c_data->read_buf;
+	//login_rq_t *rq = (login_rq_t*)c_data->read_buf;
 
 	/*构造登录回复包*/
 	login_rs_t rs;
@@ -151,9 +157,9 @@ KNL_RESULT knl_login(void *clientdata)
 	c_rs->result = rs.result;
 	c_data->w_length = sizeof(login_rs_t);
 
-	if(sql_api_is_user_exist(args) == SQL_API_OK)
+	if(sql_api_is_user_exist(c_data) == SQL_API_OK)
 	{
-		if(sql_api_is_pwd_right(args) == SQL_API_OK)
+		if(sql_api_is_pwd_right(c_data) == SQL_API_OK)
 		{
 			rs.result = SUCCEED;
 			c_rs->result = rs.result;
@@ -164,7 +170,7 @@ KNL_RESULT knl_login(void *clientdata)
 		rs.result = FAILED;
 	}
 
-	if(KNL_ERROR == insert_online_user(c_data)
+	if(KNL_ERROR == knl_insert_user_online(c_data))
 	{
 		return KNL_ERROR;
 	}
@@ -193,16 +199,16 @@ KNL_RESULT knl_search_user(void *clientdata)
 	s_rs->packtype = PROTOCOL_SEARCH_USER_RS;
 
 	list_t *lst;
-    list_init(&lst);
+	list_init(&lst);
     
-	if(SQL_API_OK == sql_api_select_user(args,&lst))
+	if(SQL_API_OK == sql_api_select_user(c_data,&lst))
 	{
 		char *str = NULL;
-		str = lst_pop(&lst);
+		str = lst_pop(lst);
 		strncpy(s_rs->s_name,str,strlen(str));
-		str = lst_pop(&lst);
+		str = lst_pop(lst);
 		strncpy(s_rs->s_birth,str,strlen(str));
-		str = lst_pop(&lst);
+		str = lst_pop(lst);
 		s_rs->s_sex = *str;
 		epoll_add_event(c_data->epollfd,c_data->fd);
 		return KNL_OK;
@@ -210,17 +216,17 @@ KNL_RESULT knl_search_user(void *clientdata)
 	return KNL_ERROR;
 }
 
-static long long GetClientIp(long long llv_Id)
+KNL_RESULT GetClientIp(long long *llv_Id)
 {
-	SQL_NODE *mysql_connect = get_db_connect(sql_conn_pool);
-
-	list_t *lpv_List = NULL;
-	list_init(&lpv_List);
-	char lszv_Sql[BUFSIZE];
-	bzero(lszv_Sql,sizeof(lszv_Sql));
-	sprintf(lszv_Sql,"select ip from usr_online where id = %lld;",llv_Id);
-	mysql_select(mysql_connect->mysql_sock,lszv_Sql,lpv_List);
-	return atoi(lst_pop(lpv_List));
+	if(llv_Id == NULL || llv_Id <= 0)
+	{
+		return KNL_INVALID; 
+	}
+	if(SQL_API_OK == sql_api_get_user_ip(llv_Id))
+	{
+		return KNL_OK;
+	}
+	return KNL_ERROR;
 }
 
 KNL_RESULT knl_add_user(void *clientdata)
@@ -235,7 +241,7 @@ KNL_RESULT knl_add_user(void *clientdata)
 
 
 	long long llv_Ip = 0;
-	llv_Ip = GetClientIp(lpv_Addrq->searchid);
+	llv_Ip = GetClientIp(&lpv_Addrq->searchid);
 
 	add_rq_t *p = (add_rq_t*)lpv_Clientdata->write_buf;
 	p->usrid = lpv_Addrq->usrid;
@@ -263,7 +269,7 @@ KNL_RESULT knl_add_user_rs(void *clientdata)
 	add_rs_t *lpv_Addrs = (add_rs_t*)lpv_Clientdata->read_buf;
 
 	//客户端在线
-	if(knl_is_user_online() == KNL_OK)
+	if(knl_is_user_online(1,1,1) == KNL_OK)
 	{
 		add_rs_t *p = (add_rs_t*)lpv_Clientdata->write_buf;
 		p->packtype = lpv_Addrs->packtype;
@@ -303,7 +309,7 @@ int send_msg(void* clientdata)
 	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
 	msg_rq_t *lpv_Msg = (msg_rq_t*)lpv_Clientdata->read_buf;
 	msg_rq_t *p = (msg_rq_t*)lpv_Clientdata->write_buf;
-	long long llv_Receiverip = GetClientIp(lpv_Msg->receiverid);
+	long long llv_Receiverip = GetClientIp(&lpv_Msg->receiverid);
 	p->senderid = lpv_Msg->senderid;
 	p->receiverid = lpv_Msg->receiverid;
 	p->packtype = PROTOCOL_SEND_MSG_RS;
@@ -327,9 +333,9 @@ KNL_RESULT knl_get_friend_list(void* clientdata)
 	}
 
 	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
-	getfriendlist_rq_t *p = (getfriendlist_rq_t*)lpv_Clientdata->read_buf;
+	//getfriendlist_rq_t *p = (getfriendlist_rq_t*)lpv_Clientdata->read_buf;
 
-	long long llv_Senderid = p->senderid;
+	//long long llv_Senderid = p->senderid;
 	getfriendlist_rs_t rs;
 	bzero(&rs,sizeof(rs));
 	rs.packtype = PROTOCOL_GET_FRIEND_LIST_RS;
@@ -339,11 +345,11 @@ KNL_RESULT knl_get_friend_list(void* clientdata)
 	list_init(&lpv_Idlist);
 	list_init(&lpv_Namelist);
 	
-	if(SQL_API_OK == sql_api_get_user_list(args,lpv_Idlist))
+	if(SQL_API_OK == sql_api_get_user_list(lpv_Clientdata))
 	{
-		rs.friendnum = i;
-		memcpy(lpv_Clientdata->write_buf,(char*)&rs,8+i*sizeof(friendlistmsg_t));
-		lpv_Clientdata->w_length = 8+ i*sizeof(friendlistmsg_t);
+		rs.friendnum = 1;
+		memcpy(lpv_Clientdata->write_buf,(char*)&rs,8+1*sizeof(friendlistmsg_t));
+		lpv_Clientdata->w_length = 8+ 1*sizeof(friendlistmsg_t);
 	}
 
 	epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);

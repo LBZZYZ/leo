@@ -20,7 +20,7 @@ API RETURN VALUE macro define
 
 
 /*RETURN VALUE data type*/
-tpyedef int SQL_RESULT;
+typedef int SQL_RESULT;
 
 /*
 user info define

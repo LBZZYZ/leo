@@ -164,3 +164,21 @@ SQL_RESULT sql_api_get_user_list(void *args,list_t *lst)
 }
 
 
+SQL_RESULT sql_api_get_user_ip(long long *llv_Id)
+{
+	list_t *lpv_List = NULL;
+	list_init(&lpv_List);
+	
+	char lszv_Sql[BUFSIZE];
+	bzero(lszv_Sql,sizeof(lszv_Sql));
+
+	sprintf(lszv_Sql,"select ip from usr_online where id = %lld;",llv_Id);
+
+	if(SQL_OK == mysql_select(mysql_connect->mysql_sock,lszv_Sql,lpv_List))
+	{
+		*llv_Id = atoi(lst_pop(lpv_List));
+		return SQL_API_OK;
+	}
+	return SQL_API_ERR;
+	
+}

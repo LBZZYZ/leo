@@ -1,9 +1,9 @@
 //#include "net.h"
 #include "dlfcn.h"
 #include "pool.h"
-#include "sqlpool.h"
+#include "sql_pool.h"
 #include <stdio.h>
-#include "/root/leo/server/src/ccl-0.1.1/ccl/ccl.h"
+#include "./ccl-0.1.1/ccl/ccl.h"
        
 
 int main()
