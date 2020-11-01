@@ -10,6 +10,9 @@ RETURN VALUE macro define
 #define SQL_ERR      -1
 #define SQL_INVALID   1 
 
+#define BUFSIZE      100
+#define MYSQLSIZE     100
+
 
 /*
 API RETURN VALUE macro define

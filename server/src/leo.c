@@ -6,6 +6,8 @@
 #include "./ccl-0.1.1/ccl/ccl.h"
        
 
+//创建数据库连接池
+SQL_CONN_POOL *sql_conn_pool;
 int main()
 {
         struct ccl_t config;
@@ -28,22 +30,10 @@ int main()
         mysql_user = ccl_get(&config,"mysql_user");
         mysql_user_pwd = ccl_get(&config,"mysql_user_pwd");
         _mysql_port = atoi(ccl_get(&config,"mysql_port"));
+	sql_conn_pool = sql_pool_create(POOL_MAX_NUMBER, \
+                  mysql_ip, _mysql_port, mysql_db_name, mysql_user, mysql_user_pwd);
 
-        //创建数据库连接池
-        SQL_CONN_POOL *sql_conn_pool = sql_pool_create(POOL_MAX_NUMBER, \
-                               mysql_ip, _mysql_port, mysql_db_name, mysql_user, mysql_user_pwd);
-	printf("leo.c:%p\n",sql_conn_pool);
  
-        if(sql_conn_pool != NULL)
-        {
-	    printf("[1]数据库连接池初始化成功\n");
-        }
-
-	else
-        {
-            printf("[1]数据库连接池初始化失败\n");
-        }
-        
 	//创建线程池
 	pool_t *pool = Thread_Create(20, 10, 10);
 

@@ -116,7 +116,6 @@ KNL_RESULT knl_registe(void *clientdata)
 	c_data->w_length = sizeof(registe_rs_t);
 
 	registe_rq_t *rq = (registe_rq_t *)(c_data->read_buf);
-	rs.packnum = rq->packnum;
 
 	registe_rs_t rs;
 	knl_stru_init((void*)&rs,E_STRU_INIT_REGISTER_RS);
@@ -156,7 +155,7 @@ KNL_RESULT knl_login(void *clientdata)
 	}
 	else
 	{
-		rs.result = FAILED;
+		c_rs->result = FAILED;
 	}
 
 	if(KNL_ERROR == knl_insert_user_online(c_data))
@@ -294,7 +293,7 @@ KNL_RESULT knl_add_user_rs(void *clientdata)
 }
 
 /*消息转发*/
-int send_msg(void* clientdata)
+int knl_send_msg(void* clientdata)
 {
 	if(NULL == clientdata)exit(EXIT_FAILURE);
 	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
@@ -336,7 +335,7 @@ KNL_RESULT knl_get_friend_list(void* clientdata)
 	list_init(&lpv_Idlist);
 	list_init(&lpv_Namelist);
 	
-	if(SQL_API_OK == sql_api_get_user_list(lpv_Clientdata))
+	if(SQL_API_OK == sql_api_get_user_list(lpv_Clientdata, &lpv_Idlist))
 	{
 		rs.friendnum = 1;
 		memcpy(lpv_Clientdata->write_buf,(char*)&rs,8+1*sizeof(friendlistmsg_t));

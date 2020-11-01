@@ -1,7 +1,7 @@
 CC=gcc
 CXX=g++
 INCLUDE=-I../../include -I/usr/local/mysql/include
-CFLAGS= -g -Wall -c -std=c99 $(INCLUDE)
+CFLAGS= -g -Wall -c $(INCLUDE)
 #预处理命令
 CPPFLAGS=-E -D
 #C++编译时选项

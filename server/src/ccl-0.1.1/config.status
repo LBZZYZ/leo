@@ -492,13 +492,13 @@ s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,echo,;t t
 s,@PACKAGE@,ccl,;t t
 s,@VERSION@,0.1.1,;t t
-s,@ACLOCAL@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run aclocal-1.8,;t t
-s,@AUTOCONF@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run autoconf,;t t
-s,@AUTOMAKE@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run automake-1.8,;t t
-s,@AUTOHEADER@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run autoheader,;t t
-s,@MAKEINFO@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run makeinfo,;t t
-s,@AMTAR@,${SHELL} /root/leo/server/src/ccl-0.1.1/missing --run tar,;t t
-s,@install_sh@,/root/leo/server/src/ccl-0.1.1/install-sh,;t t
+s,@ACLOCAL@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run aclocal-1.8,;t t
+s,@AUTOCONF@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run autoconf,;t t
+s,@AUTOMAKE@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run automake-1.8,;t t
+s,@AUTOHEADER@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run autoheader,;t t
+s,@MAKEINFO@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run makeinfo,;t t
+s,@AMTAR@,${SHELL} /root/documents/leo/server/src/ccl-0.1.1/missing --run tar,;t t
+s,@install_sh@,/root/documents/leo/server/src/ccl-0.1.1/install-sh,;t t
 s,@STRIP@,strip,;t t
 s,@ac_ct_STRIP@,strip,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t

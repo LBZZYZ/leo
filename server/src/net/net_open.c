@@ -1,6 +1,7 @@
 #include "net.h"
 #include "protocol.h"
 #include "err_sys.h"
+#include "kernel.h"
 #include <stdio.h>
 
 

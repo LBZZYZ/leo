@@ -3,13 +3,13 @@
 
 SQL_RESULT sql_api_add_user(void *args)
 {
-    //数据库插入语句
+	//数据库插入语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
-    //解析insert语句
+	//解析insert语句
 	sprintf(sql,"insert into usrinfos(usr_number,usr_name,usr_password,\
                     usr_age,usr_sex,usr_birth) values('%s','%s','%s',%d,'%c','%s');",\
-				    rq->usrid, rq->usrname, rq->password, 18, rq->sex, rq->birth);
+				    1, 1, 1, 18, 1, 1);
 
     /*把添加新用户的逻辑写到这里*/
     if(SQL_OK == mysql_insert(sql))
@@ -45,7 +45,7 @@ SQL_RESULT sql_api_is_user_exist(void *args)
 	bzero(sql,sizeof(sql));
 
     sprintf(sql, "select usrid from usrinfos \
-                    where usrid = '%s'", rq->usrid);
+                    where usrid = '%s'", 1);
     if(SQL_OK == mysql_select(sql,lst))
     {
         return SQL_API_OK;
@@ -85,7 +85,7 @@ SQL_RESULT sql_api_insert_user_online(void *args)
 
 	/*把id、ip、port写入usr_online表*/
 	sprintf(lszv_Sql, "insert into usr_online \
-                           value(%lld,%lld,%lld);", llv_Id, llv_Ip, llv_Port);
+                           value(%lld,%lld,%lld);", 1, 1, 1);
 
 
 	if(SQL_OK == mysql_insert(lszv_Sql))
@@ -97,17 +97,17 @@ SQL_RESULT sql_api_insert_user_online(void *args)
 }
 
 
-SQL_RESULT sql_api_select_user(void *args,list_t *lst)
+SQL_RESULT sql_api_select_user(void *args,list_t **lst)
 {
     if(args == NULL | lst == NULL)
     {
         return SQL_API_INVALID;
     }
 
-	char mysql_statement[MYSQLSIZE];
-	bzero(mysql_statement,sizeof(mysql_statement));
+	char sql[MYSQLSIZE];
+	bzero(sql,sizeof(sql));
 
-	snprintf(mysql_statement,sizeof(mysql_statement),"select usrname,birth,sex from usrinfos where usrid = %lld",s_rq->searchid);
+	snprintf(sql,sizeof(sql),"select usrname,birth,sex from usrinfos where usrid = %lld", 1);
 	
     if(SQL_OK == mysql_select(sql,lst))
     {
@@ -118,7 +118,7 @@ SQL_RESULT sql_api_select_user(void *args,list_t *lst)
 
 }
 
-SQL_RESULT sql_api_get_user_list(void *args,list_t *lst)
+SQL_RESULT sql_api_get_user_list(void *args,list_t **lst)
 {
     //usr_friends & userinfos两张表
     if(args == NULL)
@@ -128,7 +128,7 @@ SQL_RESULT sql_api_get_user_list(void *args,list_t *lst)
 
 	char id_statement[MYSQLSIZE] = {0};
 	char name_statement[MYSQLSIZE] = {0};
-	snprintf(id_statement,MYSQLSIZE,"select friend_id from usr_friends where user_id = %lld union all select user_id from usr_friends where friend_id = %lld;",llv_Senderid,llv_Senderid);
+	snprintf(id_statement,MYSQLSIZE,"select friend_id from usr_friends where user_id = %lld union all select user_id from usr_friends where friend_id = %lld;", 1, 1);
 	
 	list_t *lpv_Idlist = NULL;
 	list_t *lpv_Namelist = NULL;
@@ -146,13 +146,13 @@ SQL_RESULT sql_api_get_user_list(void *args,list_t *lst)
             while((str = lst_pop(lpv_Idlist)) != NULL/*&& (lsv_Name = lst_pop(lpv_Namelist) != NULL)*/)
             {
                 lsv_Id = atoll(str);
-                rs.friendlistmsg[i].id = lsv_Id;
+                //rs.friendlistmsg[i].id = lsv_Id;
                 
                 snprintf(name_statement,MYSQLSIZE,"select usrname from usrinfos where usrid = %lld;",lsv_Id);
                 if(SQL_OK == mysql_select(name_statement,lpv_Namelist))
                 {
                     lsv_Name = lst_pop(lpv_Namelist);
-                    strncpy(rs.friendlistmsg[i].name,lsv_Name,45);
+                    //strncpy(rs.friendlistmsg[i].name,lsv_Name,45);
                     ++i;
 
                 }
@@ -174,7 +174,7 @@ SQL_RESULT sql_api_get_user_ip(long long *llv_Id)
 
 	sprintf(lszv_Sql,"select ip from usr_online where id = %lld;",llv_Id);
 
-	if(SQL_OK == mysql_select(mysql_connect->mysql_sock,lszv_Sql,lpv_List))
+	if(SQL_OK == mysql_select(lszv_Sql,lpv_List))
 	{
 		*llv_Id = atoi(lst_pop(lpv_List));
 		return SQL_API_OK;

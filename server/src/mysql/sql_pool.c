@@ -1,4 +1,4 @@
-#include "sqlpool.h"
+#include "sql_pool.h"
 
 /*创建连接池*/
 SQL_CONN_POOL *sql_pool_create(int connect_pool_number,const char ip[],const int port, 

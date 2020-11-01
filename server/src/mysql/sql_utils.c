@@ -9,7 +9,7 @@ SQL_RESULT mysql_insert(const char* sql)
 		return SQL_ERR;
     }
 
-	if(mysql_query(mysql_connect->sock,sql))
+	if(mysql_query(mysql_connect->mysql_sock,sql))
 	{
 		return SQL_ERR;
 	}
@@ -28,7 +28,7 @@ SQL_RESULT mysql_delete(const char* sql)
 		return SQL_ERR;
     }
 
-	if(mysql_query(mysql_connect->sock,sql))
+	if(mysql_query(mysql_connect->mysql_sock,sql))
 	{
 		return SQL_ERR;
 	}
@@ -46,7 +46,7 @@ SQL_RESULT mysql_update(const char* sql)
 		return SQL_ERR;
     }
 
-	if(mysql_query(mysql_connect->sock,sql))
+	if(mysql_query(mysql_connect->mysql_sock,sql))
 	{
 		return SQL_ERR;
 	}
@@ -64,14 +64,14 @@ SQL_RESULT mysql_select(const char* sql,list_t *lst)
 	MYSQL_RES *results;		//结果集
 	MYSQL_ROW record;
 
-	if(mysql_query(sock,sql)) 	/*成功返回0*/
+	if(mysql_query(mysql_connect->mysql_sock,sql)) 	/*成功返回0*/
 	{
 		return SQL_ERR;
 	}
 
 	/*MYSQL_RES *mysql_store_result(MYSQL *mysql)*/
 	/*在mysql_query()之后必须调用它来产生一个结果集*/
-	if(NULL == (results = mysql_store_result(sock)))
+	if(NULL == (results = mysql_store_result(mysql_connect->mysql_sock)))
 	{
 		return SQL_ERR;
 	}
