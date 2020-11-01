@@ -35,17 +35,16 @@ SQL_RESULT sql_api_is_user_online(void *args)
 
 }
 
-SQL_RESULT sql_api_is_user_exist(void *args)
+SQL_RESULT sql_api_is_user_exist(const char *userid)
 {
     list_t *lst;
 	list_init(&lst);
 
-	//数据库插入语句
 	char sql[MYSQLSIZE];
 	bzero(sql,sizeof(sql));
 
-    sprintf(sql, "select usrid from usrinfos \
-                    where usrid = '%s'", 1);
+    sprintf(sql, "select usrid from usrinfos where usrid = '%s'", userid);
+    
     if(SQL_OK == mysql_select(sql,lst))
     {
         return SQL_API_OK;
@@ -64,13 +63,15 @@ SQL_RESULT sql_api_is_pwd_right(void *args)
 	bzero(sql,sizeof(sql));
 	snprintf(sql,sizeof(sql),"select usr_password from usrinfos where usrid = '280761575'");
 
-    list_t *lst;
-    list_init(&lst);
-    if(SQL_OK == mysql_select(sql,&lst))
-    {
-        return SQL_API_OK;
-    }
-    return SQL_API_ERR;
+	list_t *lst;
+	list_init(&lst);
+
+	if(SQL_OK == mysql_select(sql,lst))
+	{
+		return SQL_API_OK;
+	}
+
+	return SQL_API_ERR;
 }
 
 SQL_RESULT sql_api_insert_user_online(void *args)

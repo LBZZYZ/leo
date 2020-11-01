@@ -144,7 +144,7 @@ KNL_RESULT knl_login(void *clientdata)
 	c_data->w_length = sizeof(login_rs_t);
 
 	login_rs_t *c_rs = (login_rs_t*)c_data->write_buf;
-	knl_stru_init((void*)&c_rs,E_STRU_INIT_LOGIN_RS);
+	knl_stru_init((void*)c_rs,E_STRU_INIT_LOGIN_RS);
 
 	if(sql_api_is_user_exist(c_data) == SQL_API_OK)
 	{
