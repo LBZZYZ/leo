@@ -29,6 +29,9 @@ KNL_RESULT knl_stru_init(void *stru, enum STRU_INIT args)
 	{
 		case E_STRU_INIT_LOGIN_RS:
 		{
+			login_rs_t *st = (login_rs_t*)stru;
+			st->packtype = PROTOCOL_LOGIN_RS;
+			st->result = FAILED;
 			break;
 		}
 		case E_STRU_INIT_REGISTER_RS:
@@ -45,7 +48,7 @@ KNL_RESULT knl_stru_init(void *stru, enum STRU_INIT args)
 			break;
 		}
 	}
-	return KNL_ERROR;
+	return KNL_OK;
 
 }
 KNL_RESULT knl_is_user_online(int fd,int ip,int port)
@@ -107,10 +110,8 @@ KNL_RESULT knl_registe(void *clientdata)
 	struct client_data *c_data = (struct client_data*)clientdata;
 	c_data->w_length = sizeof(registe_rs_t);
 
-	//获取注册请求包
 	registe_rq_t *rq = (registe_rq_t *)(c_data->read_buf);
 
-	//定义注册回复包
 	registe_rs_t rs;
 	knl_stru_init((void*)&rs,E_STRU_INIT_REGISTER_RS);
 
@@ -140,29 +141,17 @@ KNL_RESULT knl_registe(void *clientdata)
 
 KNL_RESULT knl_login(void *clientdata)
 {
-	/*获取客户端数据*/
 	struct client_data *c_data = (struct client_data*)clientdata;
-
-	/*获取登录请求包*/
-	//login_rq_t *rq = (login_rq_t*)c_data->read_buf;
-
-	/*构造登录回复包*/
-	login_rs_t rs;
-	rs.packtype = PROTOCOL_LOGIN_RS;
-	rs.result = FAILED;
-
-	/*向客户数据中写入回复包*/
-	login_rs_t *c_rs = (login_rs_t*)c_data->write_buf;
-	c_rs->packtype = rs.packtype;
-	c_rs->result = rs.result;
 	c_data->w_length = sizeof(login_rs_t);
+
+	login_rs_t *c_rs = (login_rs_t*)c_data->write_buf;
+	knl_stru_init((void*)&c_rs,E_STRU_INIT_LOGIN_RS);
 
 	if(sql_api_is_user_exist(c_data) == SQL_API_OK)
 	{
 		if(sql_api_is_pwd_right(c_data) == SQL_API_OK)
 		{
-			rs.result = SUCCEED;
-			c_rs->result = rs.result;
+			c_rs->result = SUCCEED;
 		}
 	}
 	else
