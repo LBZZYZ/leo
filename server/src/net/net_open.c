@@ -72,18 +72,17 @@ void net_open(pool_t *pool)
 	epoll_add_event(epollfd,listenfd);
 	epoll_add_event(epollfd,udpfd);
 
-	/*客户数据信息*/
 	client_data *usrs = (client_data*)malloc(sizeof(client_data)*FDSIZE);
 	memset(usrs,0,sizeof(client_data)*FDSIZE);
+
 	for(int i=0;i<FDSIZE;i++)
 	{
 		usrs[i].epollfd = epollfd;
 		usrs[i].src_addrlen = sizeof(struct sockaddr_in);
 		usrs[i].dest_addrlen = sizeof(struct sockaddr_in);
 	}
-	
-
 	printf("[3]网络初始化成功\n");
+
 	for (;;) 
 	{
 		if(-1 == (nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)))
@@ -163,55 +162,47 @@ void net_open(pool_t *pool)
 			else if(events[n].events & EPOLLIN)
 			{
 				printf("TCP读\n");
-				//int size = 0;
-				int len = 0;
-				int connfd = 0;
-				connfd = events[n].data.fd;
+
+				int *p_len = &usrs[connfd].r_length;
+				int connfd = events[n].data.fd;
 				usrs[connfd].fd = connfd;
+				bzero(usrs[connfd].read_buf, sizeof(usrs[connfd].read_buf));
+
 				/*接受包大小*/
 				/*if(-1 == (recv(connfd,&size,4,0)))
 				{
 					err_sys("RECV SIZE",EXIT_FAILURE);
 				}*/
-				bzero(usrs[connfd].read_buf,sizeof(usrs[connfd].read_buf));
-				/*接收数据*/
-				if((-1 == (len = recv(connfd,usrs[connfd].read_buf,BUFSIZE,0))) && (errno != EAGAIN))
-				{
-					printf("客户端断开\n");
-					close(connfd);
-					epoll_ctl(epollfd,EPOLL_CTL_DEL,connfd,NULL);
-					continue;
-					//err_sys("RECV",EXIT_FAILURE);
-				}
-				if(len == 0)
-				{
-					printf("客户端断开\n");
-					close(connfd);
-					epoll_ctl(epollfd,EPOLL_CTL_DEL,connfd,NULL);
-					continue;
 
+				if(((-1 == (*p_len = recv(connfd, usrs[connfd].read_buf, BUFSIZE, 0))) && (errno != EAGAIN)) || *p_len == 0)
+				{
+					close(connfd);
+					epoll_ctl(epollfd, EPOLL_CTL_DEL, connfd, NULL);
+					continue;
 				}
-				usrs[connfd].r_length = len;
-				Thread_Add_Task(pool,deal_data,(void*)&usrs[connfd]);
+				else
+				{
+					Thread_Add_Task(pool,deal_data,(void*)&usrs[connfd]);
+				}				
 			}
+
 			/*TCP写*/
 			else if(events[n].events & EPOLLOUT)
 			{
 				printf("TCP写\n");
+
 				int connfd = events[n].data.fd;
 				if(usrs[connfd].write_buf[0] == 0)
+				{
 					continue;
+				}
+
 				send_tcp_data(connfd,(const char*)(&(usrs[connfd].w_length)),4);
 				send_tcp_data(connfd,usrs[connfd].write_buf,usrs[connfd].w_length);
-				printf("length:%d\n",usrs[connfd].w_length);
+		
 				epoll_mod_event(epollfd,connfd);
-				packtype_t packtype =* usrs[connfd].write_buf;
-				printf("%d\n",packtype);
-				if(packtype == 38)
-				{
-					
+				packtype_t packtype = *(usrs[connfd].write_buf);
 
-				}
 				bzero(usrs[connfd].write_buf,sizeof(usrs[connfd].write_buf));
 			}
 			/*未知事件*/

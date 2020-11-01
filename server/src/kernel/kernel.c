@@ -43,6 +43,11 @@ KNL_RESULT knl_stru_init(void *stru, enum STRU_INIT args)
 			st->result = FAILED;
 			break;
 		}
+		case E_STRU_INIT_SEARCH_USER_RS:
+		{
+			search_rs_t *st = (search_rs_t*)stru;
+			st->packtype = PROTOCOL_SEARCH_USER_RS;
+		}
 		default:
 		{
 			break;
@@ -107,15 +112,14 @@ KNL_RESULT knl_insert_user_online(void *args)
 KNL_RESULT knl_registe(void *clientdata)
 {
 
-	struct client_data *c_data = (struct client_data*)clientdata;
+	client_data *c_data = (client_data*)clientdata;
 	c_data->w_length = sizeof(registe_rs_t);
 
 	registe_rq_t *rq = (registe_rq_t *)(c_data->read_buf);
+	rs.packnum = rq->packnum;
 
 	registe_rs_t rs;
 	knl_stru_init((void*)&rs,E_STRU_INIT_REGISTER_RS);
-
-	rs.packnum = rq->packnum;
 
 	if(knl_is_user_exist(c_data) != KNL_OK)
 	{
@@ -123,10 +127,6 @@ KNL_RESULT knl_registe(void *clientdata)
 		{
 			rs.result = SUCCEED;
 		}
-	}
-	else 
-	{
-		rs.result = FAILED;
 	}
 
 	memmove(c_data->write_buf,&rs,sizeof(rs));
@@ -174,6 +174,8 @@ KNL_RESULT knl_search_user(void *clientdata)
 
 	/*获取查找好友请求包*/
 	struct client_data *c_data = (struct client_data*)clientdata;
+	c_data->w_length = sizeof(search_rs_t);
+
 	search_rq_t *s_rq = (search_rq_t*)c_data->read_buf;
 
 	/*包异常检测*/
@@ -184,8 +186,8 @@ KNL_RESULT knl_search_user(void *clientdata)
 
 	/*构造查找回复包*/
 	search_rs_t *s_rs = (search_rs_t*)c_data->write_buf;
-	c_data->w_length = sizeof(search_rs_t);
-	s_rs->packtype = PROTOCOL_SEARCH_USER_RS;
+	knl_stru_init(s_rs,E_STRU_INIT_SEARCH_USER_RS);
+	
 
 	list_t *lst;
 	list_init(&lst);
@@ -202,6 +204,7 @@ KNL_RESULT knl_search_user(void *clientdata)
 		epoll_add_event(c_data->epollfd,c_data->fd);
 		return KNL_OK;
 	}
+
 	return KNL_ERROR;
 }
 
@@ -243,7 +246,6 @@ KNL_RESULT knl_add_user(void *clientdata)
 	lpv_Clientdata->dest_addr.sin_addr.s_addr = llv_Ip;
 	lpv_Clientdata->dest_addr.sin_port = htons(4567);
 	epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
-
 
 	return KNL_OK;
 }

@@ -86,16 +86,16 @@ typedef struct
 
 typedef struct client_data //参数封装
 {
-	char 		read_buf[BUFSIZE];
-	char 		write_buf[BUFSIZE];
-	int  		r_length;
-	int 		w_length;
-	int 		epollfd;
-	int 		fd;
+	char 		       read_buf[BUFSIZE];
+	char 		       write_buf[BUFSIZE];
+	int  		       r_length;
+	int 		       w_length;
+	int 		       epollfd;
+	int 		       fd;
 	struct sockaddr_in src_addr;
-	socklen_t 	src_addrlen;
+	socklen_t 	       src_addrlen;
 	struct sockaddr_in dest_addr;
-	socklen_t 	dest_addrlen;
+	socklen_t 	       dest_addrlen;
 }client_data;
 
 
