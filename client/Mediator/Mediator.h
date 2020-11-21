@@ -8,7 +8,6 @@
 #include "NetThread\UdpThread.h"
 #include "NetThread\TcpThread.h"
 #include "QClient\qclient.h"
-#include "qchatwindow.h"
 #include "signup.h"
 class Mediator:public QObject
 {
@@ -24,7 +23,6 @@ public:
 	CAgency* m_pTcpAgency;//
 	UdpThread* m_udpthread;
 	TcpThread* m_tcpthread;
-	//QChatWindow *m_pChatWindow;
 	void InitQClient(list<FRINENDLISTMSG> *);
 public slots:
     

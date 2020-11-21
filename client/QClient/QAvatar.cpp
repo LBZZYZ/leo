@@ -2,6 +2,11 @@
 #include"qpixmap.h"
 #include <QBitmap>
 
+QAvatar::QAvatar(QWidget* parent)
+{
+
+}
+
 QAvatar::QAvatar(QPixmap *avatar, QSize size, EN_AVATAR_SHAPE shape, int x, int y, bool isclickable, QWidget *parent):
 	m_AvaFile(*avatar),
 	m_AvaSize(size),
@@ -16,8 +21,9 @@ QAvatar::QAvatar(QPixmap *avatar, QSize size, EN_AVATAR_SHAPE shape, int x, int 
 	
 	this->setGeometry(m_AvaPosX,m_AvaPosY,m_AvaSize.rwidth(),m_AvaSize.rheight());
 	//this->setEnabled(isEnabled);
-
-	setStyleSheet(QString("QPushButton{background-image:url(Resources/QQImage.png);border:none}"));
+	this->setIcon(QIcon(*avatar));
+	this->setIconSize(size);
+	//setStyleSheet(QString("QPushButton{background-image:url(Resources/QQImage.png);border:none}"));
 }
 
 

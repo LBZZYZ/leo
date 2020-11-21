@@ -1,21 +1,23 @@
 ﻿#include "QPersonList.h"
-#include "qaction.h"
 
+#include <QAction>
 #include <QDialog>
 #include <QMessageBox>
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
-#include <qfile.h>
+#include <QFile>
 #include <QTextStream>
-#include <qdebug.h>
+#include <QDebug>
 #include <Protocol\Protocol.h>
-QPersonList::QPersonList(list<FRINENDLISTMSG> * pFriendlistmsg,QWidget *parent)
+
+QPersonList::QPersonList(list<FRINENDLISTMSG> * pFriendlistmsg, QWidget *parent)
 	: QTreeWidget(parent)
 {
 	TempDeleteItem = nullptr;
 	InitMenu();
 	setFixedSize(parent->width(), parent->height());
 	InitFriendTree(pFriendlistmsg);
+
 	m_pModifyGroupNameEdit = new QLineEdit("未命名", this);
 	m_pModifyGroupNameEdit->hide();
 	m_pModifyGroupNameEdit->setContextMenuPolicy(Qt::NoContextMenu);
@@ -34,9 +36,6 @@ void QPersonList::InitMenu()
 	m_pBlankMenu = new QMenu();
 	m_pGroupMenu = new QMenu();
 	m_pPresonMenu = new QMenu();
-	//m_pPresonMenu->setStyleSheet("QMenu::item{padding-left:40px;}");
-
-
 
 	//组菜单
 	QAction *ReFreshCurrentList = new QAction(QString("刷新好友列表"), this);
@@ -49,7 +48,6 @@ void QPersonList::InitMenu()
 	QAction *MoveFriend = new QAction(QString("移动联系人至"), this);
 	QAction *DelFriend = new  QAction(QString("删除好友"), this);
 	QAction *ModifyNote = new QAction(QString("修改备注"), this);
-	QAction *AddFriend = new QAction(QString("添加好友"), this);
 
 	//布局
 	m_pGroupMenu->addAction(ReFreshCurrentList);
@@ -62,7 +60,6 @@ void QPersonList::InitMenu()
 	m_pPresonMenu->addAction(ModifyNote);
 	m_pPresonMenu->addAction(DelFriend);
 	m_pPresonMenu->addAction(MoveFriend);
-	m_pPresonMenu->addAction(AddFriend);
 
 	m_pBlankMenu->addAction(AddGroup);
 
@@ -71,42 +68,44 @@ void QPersonList::InitMenu()
 	connect(AddGroup, SIGNAL(triggered()), this, SLOT(AddGroupTreeSlot()));
 	connect(DelCurrentGroup, SIGNAL(triggered()), this, SLOT(DelDroupSlot()));
 	connect(ReGroupName, SIGNAL(triggered()), this, SLOT(ReGroupNameSLot()));
-	connect(AddFriend, SIGNAL(triggered()), this, SLOT(AddFriendSlot()));
 	connect(DelFriend, SIGNAL(triggered()), this, SLOT(DelFriendSlot()));
 	connect(ModifyNote, SIGNAL(triggered()), this, SLOT(ModifyNoteSlot()));
 
 
 }
 
-/*初始化好友列表*/
+
 void QPersonList::InitFriendTree(list<FRINENDLISTMSG> *pFriendlistmsg)
 {
-	//if (NULL == pFriendlistmsg)return;
+	if (pFriendlistmsg == nullptr || pFriendlistmsg->empty())
+	{
+		qDebug() << "InitFriendTree list empty";
+		return;
+	}
+
+	//int frienditemnum = pFriendlistmsg->size() / sizeof(FRINENDLISTMSG);
+	int frienditemnum = 1;
 
 	this->setHeaderHidden(true);		//隐藏标题头
 	this->setColumnCount(1);			//QPersonList的列数
-	//this->setIndentation(0);			//子项相对与父项的缩进
+	this->setIndentation(0);			//子项相对与父项的缩进
 
-	pRootFriendItem = new QTreeWidgetItem(this,QStringList(QString("我的好友")));
+	pRootFriendItem = new QTreeWidgetItem(this,QStringList(QString("Friend List")));
 	pRootFriendItem->setData(0, Qt::UserRole, 0);		//设置Data用于区分，Item是分组节点还是子节点，0代表分组节点，1代表子节点
 
-	int nMyFriendNum = 3;
-
-	for (int nIndex = 0; nIndex < nMyFriendNum; ++nIndex)
+	for (int nIndex = 0; nIndex < frienditemnum; ++nIndex)
 	{
-		addMyFriendInfo(pRootFriendItem, nullptr, /*&(pFriendlistmsg->front()*/NULL);		//添加子节点
+		addMyFriendInfo(pRootFriendItem, nullptr, &(pFriendlistmsg->front()));
 	}
 
 	this->addTopLevelItem(pRootFriendItem);
+	expandItem(pRootFriendItem);
 
 	connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
 	connect(this, SIGNAL(itemCollapsed(QTreeWidgetItem *)), this, SLOT(onItemCollapsed(QTreeWidgetItem *)));
-	expandItem(pRootFriendItem);
 }
 
-
-/*添加好友结点*/
-void QPersonList::addMyFriendInfo(QTreeWidgetItem* pRootGroupItem, QMessageItem* pContactItem, FRINENDLISTMSG *pFriendlistmsg)
+void QPersonList::addMyFriendInfo(QTreeWidgetItem* pRootGroupItem, QFrdListItem* pContactItem, FRINENDLISTMSG *pFriendlistmsg)
 {
 	QTreeWidgetItem *pChild = new QTreeWidgetItem();
 	pChild->setSizeHint(0, QSize(size().width(),70));
@@ -114,7 +113,7 @@ void QPersonList::addMyFriendInfo(QTreeWidgetItem* pRootGroupItem, QMessageItem*
 	if (pContactItem != nullptr)
 	{
 		pChild->setData(0, Qt::UserRole, 1);
-		pContactItem = new QMessageItem(this);
+		pContactItem = new QFrdListItem(this);
 		pContactItem->setSizeIncrement(size().width(), 70);
 
 		pRootGroupItem->addChild(pChild);
@@ -123,17 +122,14 @@ void QPersonList::addMyFriendInfo(QTreeWidgetItem* pRootGroupItem, QMessageItem*
 	else
 	{
 		pChild->setData(0, Qt::UserRole, 1);
-		QMessageItem * ptemp = new QMessageItem(this,nullptr,"F","",0);
-		ptemp->setSizeIncrement(size().width(), 70);
-
-		//ptemp->SetName("");
-		//ptemp->SetSignatrue("This event handler, for event event, can be reimplemented in a subclass to receive mouse double click events for the widget ");
-		//ptemp->setNameLabelText();
+		QFrdListItem* item = new QFrdListItem(this, &pFriendlistmsg->avatar, pFriendlistmsg->name, pFriendlistmsg->signature, pFriendlistmsg->userid, E_ITEM_USUER);
+		item->setSizeIncrement(size().width(), 70);
 		pRootGroupItem->addChild(pChild);
-		setItemWidget(pChild, 0, ptemp);
+		setItemWidget(pChild, 0, item);
 	}
 
 }
+
 void QPersonList::AddGroupTreeSlot()
 {
 	QTreeWidgetItem *pAddGroupItem = new QTreeWidgetItem();
@@ -147,9 +143,10 @@ void QPersonList::AddGroupTreeSlot()
 	m_pModifyGroupNameEdit->selectAll();
 	m_pModifyGroupNameEdit->setGeometry(itemWidget(topLevelItem(topLevelItemCount() - 1), 0)->geometry());
 }
+
 void QPersonList::ModifyNoteSlot()
 {
-	QMessageItem* PersonItem = (QMessageItem*)itemWidget(currentItem(), 0);
+	QFrdListItem* PersonItem = (QFrdListItem*)itemWidget(currentItem(), 0);
 
 	ModifyNoteDlg(PersonItem);
 
@@ -223,15 +220,11 @@ void QPersonList::onItemCollapsed(QTreeWidgetItem *pItem)
 	}
 }
 
-
-void QPersonList::AddFriendSlot()
-{
-
-}
 void QPersonList::AddGroupSlot()
 {
 
 }
+
 void QPersonList::DelFriendSlot()//删除操作
 {
 	if (currentItem()->data(0, Qt::UserRole).toBool())//是否是好友item
@@ -240,13 +233,14 @@ void QPersonList::DelFriendSlot()//删除操作
 		STRU_USER_DELETE_RQ rq;
 		rq.packtype = PROTOCOL_GROUP_ADD_RS;
 		rq.llUserID = userId;
-		QMessageItem* tempitem = (QMessageItem*)itemWidget(currentItem(), 0);//拿到好友的自定义item	
+		QFrdListItem* tempitem = (QFrdListItem*)itemWidget(currentItem(), 0);//拿到好友的自定义item	
 		rq.llSearchID = tempitem->GetUserId();
 
 		deletefriendsignal((const char*)&rq, sizeof(STRU_USER_DELETE_RQ));
 	}
 
 }
+
 void QPersonList::DealDeletefrslot(bool result)//确认是否要删除
 {
 	if (result)
@@ -264,16 +258,19 @@ void QPersonList::DelDroupSlot()
 {
 
 }
+
 void QPersonList::ReGroupName()
 {
 
 
 
 }
+
 void QPersonList::RenameEditFshed()
 {
 
 }
+
 void QPersonList::mousePressEvent(QMouseEvent *event)//鼠标点击事件
 {
 	setCurrentItem(itemAt(event->pos()));//设置鼠标按下的Item为当前Item；
@@ -308,31 +305,43 @@ void QPersonList::mousePressEvent(QMouseEvent *event)//鼠标点击事件
 void QPersonList::mouseDoubleClickEvent(QMouseEvent *event)
 {
 	QTreeWidgetItem* tempItem = itemAt(event->pos());
-	if (tempItem == NULL)return;
+	if (tempItem == nullptr || tempItem->data(0, Qt::UserRole) == 0)
+	{
+		return;
+	}
 
 	if (event->button() == Qt::LeftButton)
 	{
 		if (tempItem->data(0, Qt::UserRole) == 1)//是否是好友item
 		{
-			QMessageItem* item = (QMessageItem*)itemWidget(tempItem, 0);
-			emit openchatwidget(item->GetNameLabel()->text());
+			QFrdListItem* item = (QFrdListItem*)itemWidget(tempItem, 0);
+			emit openchatwidget(item->GetName());
 		}
 	}
 
 }
-void QPersonList::contextMenuEvent(QContextMenuEvent* event)//菜单事件，为了显示菜单 
+
+//mouse right btn click event
+void QPersonList::contextMenuEvent(QContextMenuEvent* event) 
 {
-	setCurrentItem(itemAt(event->pos()));
+	this->setCurrentItem(itemAt(event->pos()));
 	QTreeWidget::contextMenuEvent(event); //调用基类事件 
 
-	if (currentItem() == NULL)                           //如果点击到的是空白处  
+	if (currentItem() == NULL)                          
+	{
 		m_pBlankMenu->exec(QCursor::pos());
-	else if (currentItem()->data(0, Qt::UserRole).toBool() == false)    // 如果点击到的是组
+	}	
+	else if (currentItem()->data(0, Qt::UserRole).toBool() == false)
+	{
 		m_pGroupMenu->exec(QCursor::pos());
-	else                                            //否则点击到的是好友  
+	}
+	else                       
+	{
 		m_pPresonMenu->exec(QCursor::pos());
+	}
 }
-void QPersonList::ModifyNoteDlg(QMessageItem* pItem)
+
+void QPersonList::ModifyNoteDlg(QFrdListItem* pItem)
 {
 	//窗口
 	QDialog dlg(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -348,7 +357,7 @@ void QPersonList::ModifyNoteDlg(QMessageItem* pItem)
 	connect(&buttonBox, SIGNAL(rejected()), &dlg, SLOT(rejecte()));
 	//备注编辑框
 	QLineEdit qName(&dlg);
-	qName.setText(pItem->GetNameLabel()->text());
+	qName.setText(pItem->GetName());
 	qName.setFocus();
 	qName.selectAll();
 	//布局管理
@@ -364,12 +373,12 @@ void QPersonList::ModifyNoteDlg(QMessageItem* pItem)
 	{
 		if (qName.text().isEmpty())
 		{
-			pItem->setNameLabelText();
+			//pItem->setNameLabelText();
 		}
 		else
 		{
-			pItem->SetNote(qName.text());
-			pItem->setNameLabelText();
+			//pItem->SetNote(qName.text());
+			//pItem->setNameLabelText();
 		}
 	}
 	if (res == QDialog::Rejected)//取消键有问题
@@ -379,4 +388,3 @@ void QPersonList::ModifyNoteDlg(QMessageItem* pItem)
 
 	}
 }
-

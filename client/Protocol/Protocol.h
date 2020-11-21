@@ -1,6 +1,8 @@
 #pragma once
 #include <list>
 #include<QString>
+#include <QPixmap>
+
 using namespace std;
 #define IP				"47.110.70.68"
 #define TCP_PORT			 8000
@@ -84,8 +86,11 @@ typedef struct
 
 typedef struct
 {
-	long long ID;					//  好友ID
-	char szUserName[NAME_SIZE];		//	好友昵称
+	long long userid;					
+	QPixmap avatar;
+	QString name;
+	QString remark;
+	QString signature;
 
 }FRINENDLISTMSG;
 //--------------------应答验证及心跳-----------------

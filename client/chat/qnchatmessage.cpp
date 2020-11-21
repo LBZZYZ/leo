@@ -11,6 +11,7 @@
 QNChatMessage::QNChatMessage(QWidget *parent) : QWidget(parent)
 {
 	qDebug() << parent->width();
+
 	QFont te_font = this->font();
 	te_font.setFamily("MicrosoftYaHei");
 	te_font.setPointSize(12);
@@ -48,15 +49,18 @@ void QNChatMessage::setText(QString text, QString time, QSize allSize, QNChatMes
 	m_time = time;
 	m_curTime = QDateTime::fromTime_t(time.toInt()).toString("hh:mm");
 	m_allSize = allSize;
-	if (userType == User_Me) {
-		if (!m_isSending) {
+	if (userType == User_Me) 
+	{
+		if (!m_isSending) 
+		{
 			m_loading->move(m_kuangRightRect.x() - m_loading->width() - 10, m_kuangRightRect.y() + m_kuangRightRect.height() / 2 - m_loading->height() / 2);
 			//m_loading->move(0,0);
 			m_loading->show();
 			m_loadingMovie->start();
 		}
 	}
-	else {
+	else 
+	{
 		m_loading->hide();
 	}
 
@@ -160,9 +164,10 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QBrush(Qt::white));
 
-	if (m_userType == User_Type::User_She) { // 用户
-											 //头像
-											 //        painter.drawRoundedRect(m_iconLeftRect,m_iconLeftRect.width(),m_iconLeftRect.height());
+	if (m_userType == User_Type::User_She) 
+	{
+		//头像
+		//        painter.drawRoundedRect(m_iconLeftRect,m_iconLeftRect.width(),m_iconLeftRect.height());
 		painter.drawPixmap(m_iconLeftRect, m_leftPixmap);
 
 		//框加边
@@ -199,11 +204,12 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 		QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
 		option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 		painter.setFont(this->font());
-		painter.drawText(0,0, m_msg);
+		painter.drawText(0,200, m_msg);
 	}
-	else if (m_userType == User_Type::User_Me) { // 自己
-												 //头像
-												 //        painter.drawRoundedRect(m_iconRightRect,m_iconRightRect.width(),m_iconRightRect.height());
+	else if (m_userType == User_Type::User_Me) 
+	{
+		//头像
+		//        painter.drawRoundedRect(m_iconRightRect,m_iconRightRect.width(),m_iconRightRect.height());
 		painter.drawPixmap(m_iconRightRect, m_rightPixmap);
 
 		//框
@@ -229,7 +235,7 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 		QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
 		option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 		painter.setFont(this->font());
-		painter.drawText(430,10, m_msg);
+		painter.drawText(20,10, m_msg);
 	}
 	else if (m_userType == User_Type::User_Time) { // 时间
 		QPen penText;

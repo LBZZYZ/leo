@@ -1,51 +1,126 @@
 ﻿#include "qclient.h"
 #include <QGraphicsDropShadowEffect>
-#include "qheadicon.h"
 #include "qpushbutton.h"
 #include "qpixmap.h"
 #include "qbitmap.h"
 #include "qmenubar.h"
-#include "../QClient/QMessageItem.h"
+#include "../QClient/QFrdListItem.h"
 #include "qdebug.h"
 #include <iostream>
 #include "Mediator.h"
 #include "qdatetime.h"
 #include "qstring.h"
 
+#include "QMsgListItem.h"
 
 QClient::QClient(list<FRINENDLISTMSG> * pFriendlistmsg, QObject *parent)
-
 {
 	ui.setupUi(this);
+
 	setAttribute(Qt::WA_DeleteOnClose);
 	InitWindow(pFriendlistmsg);
 	this->loadStyleSheet("QClient/QFreindTreeWidegt.css");
 	
 	addui = nullptr;
 
-	//组件连接
 	connect(ui.textEdit_MessageInput, &QTextEdit::textChanged, this, &QClient::editwordcount);
-	//connect(ui.pushButton_SendMessage, &QPushButton::clicked, this, &QClient::on_pushButton_SendMessage_clicked);
 	
 }
+
 QClient::~QClient()
 {
 	delete m_pFriendList;
-	m_pFriendList = NULL;
+	m_pFriendList = nullptr;
 
 }
 
-/*字数检查*/
+void QClient::InitWindow(list<FRINENDLISTMSG>* pFriendlistmsg)
+{
+	//hide Widget of right
+	//ui.listWidget_ChatList->hide();
+	//ui.textEdit_MessageInput->hide();
+	//ui.pushButton_SendMessage->hide();
+
+	//无边框窗口
+	this->setWindowFlags(Qt::FramelessWindowHint |/* Qt::WindowStaysOnTopHint|*/ Qt::
+		WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
+	//窗口透明
+	//this->setAttribute(Qt::WA_TranslucentBackground, true);
+
+	//窗口阴影
+	QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
+	effect->setOffset(4, 4);
+	effect->setColor(QColor(0, 0, 0, 80));
+	effect->setBlurRadius(8);
+	ui.frame->setGraphicsEffect(effect);
+
+	QPushButton* closebutton = new QPushButton(ui.frame);
+	QPixmap pixmap("Resources/TopbuttonBack.png");
+	closebutton->resize(QSize(48, 32));
+	closebutton->setMask(QBitmap(pixmap.mask()));
+	closebutton->setGeometry(this->width() - closebutton->width(), 0, 48, 32);
+	closebutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/closebutton.png);border-top-right-radius:2px}QPushButton:hover{border:none;background-color:red;}"));
+
+	QPushButton* minbutton = new QPushButton(ui.frame);
+	minbutton->resize(QSize(48, 32));
+	minbutton->setMask(QBitmap(pixmap.mask()));
+	minbutton->setGeometry(this->width() - closebutton->width() - minbutton->width(), 0, 40, 32);
+	minbutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/minbutton.png);}\n"
+		"QPushButton:hover{border:none;background-color:#BDBDBD;}"));
+
+
+	if (CLIENT_ERROR == this->UiInitMessageList())
+	{
+		qDebug() << "Function UiInitMessageList error";
+	}
+	if (CLIENT_ERROR == this->UiInitFriendList(pFriendlistmsg))
+	{
+		qDebug() << "Function UiInitFriendList error";
+	}
+
+	connect(closebutton, &QPushButton::pressed, this, &QClient::qqclientclose);
+	connect(minbutton, &QPushButton::pressed, this, &QClient::showMinimized);
+}
+
+
+CLIENT_RESULT QClient::UiInitMessageList(void)
+{
+	//get local message list
+	int msgnum = 3;
+	
+	this->GetMsgList(0/*userid*/, msgnum, msglist);
+
+	//draw message list using local data
+	QListWidgetItem* ITEM = new QListWidgetItem[msgnum]();
+	QSize size = ITEM[0].sizeHint();
+
+	for (int index = 0; index < msgnum; ++index)
+	{
+		QItemBase* item = new QMsgListItem(this, msglist[index].avatar, msglist[index].name, msglist[index].remark);
+		ITEM[index].setSizeHint(QSize(this->ui.m_pMessageListWidget->width(), 50));
+		ui.m_pMessageListWidget->addItem(&ITEM[index]);
+		//item->setSizeIncrement(size.width(), 50);
+		ui.m_pMessageListWidget->setItemWidget(&ITEM[index], item);
+	}
+
+	return CLIENT_OK;
+}
+
+CLIENT_RESULT QClient::UiInitFriendList(list<FRINENDLISTMSG>* pFriendlistmsg)
+{
+	m_pFriendList = new QPersonList(pFriendlistmsg, ui.tabWidget->widget(1));
+	m_pFriendList->installEventFilter(ui.tabWidget->widget(1));
+
+	return CLIENT_OK;
+}
+
 void  QClient::editwordcount()
 {
 
 	QString textContent = ui.textEdit_MessageInput->toPlainText();
-	// qDebug() << textContent;
 
 	int length = textContent.toUtf8().size();
-	int maxLength = 480; // 最大字节数
-	qDebug() << length;
-
+	int maxLength = 480;
 
 	if (length > maxLength) {
 		QTextCursor cursor = ui.textEdit_MessageInput->textCursor();
@@ -54,85 +129,11 @@ void  QClient::editwordcount()
 			cursor.clearSelection();
 		}
 		cursor.deletePreviousChar();
-		//设置当前的光标为更改后的光标
 		ui.textEdit_MessageInput->setTextCursor(cursor);
 	}
 
-	//length = ui.m_chatedit->toPlainText().count();
-	//qDebug() << (QString("%1/%2").arg(MAX_SIZE - length).arg(MAX_SIZE));
-
-
-
-
-
 }
 
-
-void QClient::InitWindow(list<FRINENDLISTMSG> *pFriendlistmsg)
-{
-	//无边框窗口
-	this->setWindowFlags(Qt::FramelessWindowHint |/* Qt::WindowStaysOnTopHint|*/ Qt::
-		WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
-	//窗口透明
-	//this->setAttribute(Qt::WA_TranslucentBackground, true);
-
-	//窗口阴影
-	//QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
-	//effect->setOffset(4, 4);
-	//effect->setColor(QColor(0, 0, 0, 80));
-	//effect->setBlurRadius(8);
-	//ui.frame->setGraphicsEffect(effect);
-
-	//头像
-	QPixmap* icon = new QPixmap;
-	QHeadIcon* HeadIcon = new QHeadIcon(icon, 410, 0, 48, 48,false,ui.frame);
-
-	//close按钮
-	QPushButton* closebutton = new QPushButton(ui.frame);
-	QPixmap pixmap("Resources/TopbuttonBack.png");
-	closebutton->resize(QSize(48,32));
-	closebutton->setMask(QBitmap(pixmap.mask()));
-	closebutton->setGeometry(this->width()- closebutton->width(), 0, 40, 32);
-	closebutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/closebutton.png);border-top-right-radius:2px}QPushButton:hover{border:none;background-color:red;}"));
-
-
-	QPushButton* minbutton = new QPushButton(ui.frame);
-	minbutton->resize(QSize(48,32));
-	minbutton->setMask(QBitmap(pixmap.mask()));
-	minbutton->setGeometry(this->width() - closebutton->width()-minbutton->width(), 0, 40, 32);
-	minbutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/minbutton.png);}\n"
-		"QPushButton:hover{border:none;background-color:#BDBDBD;}"));
-
-	//事件管理器
-	ui.m_pMessageListWidget->installEventFilter(ui.tabWidget);
-
-	//消息框
-
-	QListWidgetItem *ITEM = new QListWidgetItem();
-	QPixmap pixmap1("Resources/QQimage.png");
-	QString str;
-	str = QString::number(1);
-	QMessageItem* widget = new QMessageItem(this, nullptr, QString(str), QString("***********"),0,QMessageItem::USUER);
-	QSize size = ITEM->sizeHint();
-	ITEM->setSizeHint(QSize(this->ui.m_pMessageListWidget->width(), 72));
-	ui.m_pMessageListWidget->addItem(ITEM);
-	widget->setSizeIncrement(size.width(), 72);
-	ui.m_pMessageListWidget->setItemWidget(ITEM, widget);
-		
-	//定义好友列表对象
-	 m_pFriendList= new QPersonList(pFriendlistmsg,ui.tabWidget->widget(1));
-	 m_pFriendList->installEventFilter(ui.tabWidget->widget(1));
-	
-	connect(closebutton,& QPushButton::pressed, this,&QClient::qqclientclose);
-	connect(minbutton, &QPushButton::pressed, this, &QClient::showMinimized);
-	//connect(action[0], SIGNAL(triggered()), this, SLOT(qqclientclose()));
-	//connect(action[1], SIGNAL(triggered()), this, SLOT(returnlogin()));
-	//connect(action[2], SIGNAL(triggered()), this, SLOT(InitAddFriendUi()));
-
-
-	
-
-}
 
 void QClient::loadStyleSheet(const QString &sheetName)
 {
@@ -142,7 +143,7 @@ void QClient::loadStyleSheet(const QString &sheetName)
 	{
 		QString styleSheet = this->styleSheet();
 		styleSheet += QLatin1String(file.readAll());
-this->setStyleSheet(styleSheet);
+	this->setStyleSheet(styleSheet);
 	}
 }
 
@@ -180,7 +181,7 @@ void QClient::DealAddMsgToMsgListSignal(long long ID, const char* namestr, int t
 {
 
 	m_UsrIdToQListWidgetItem[ID] = new QListWidgetItem();
-	QMessageItem *pWidget = new QMessageItem(this, nullptr, QString(namestr), QString("添加请求已发送。"), ID, QMessageItem::SendVerification);
+	QFrdListItem *pWidget = new QFrdListItem(this, nullptr, QString(namestr), QString("添加请求已发送。"), ID, E_ITEM_SENDVERIFICATION);
 	QSize size = m_UsrIdToQListWidgetItem[ID]->sizeHint();
 	m_UsrIdToQListWidgetItem[ID]->setSizeHint(QSize(size.width(), 72));
 	ui.m_pMessageListWidget->addItem(m_UsrIdToQListWidgetItem[ID]);
@@ -197,7 +198,7 @@ void QClient::DealUserAddRQSLot(char *pszBuffer, int nLen)
 	long long llv_SenderId = lpv_Usraddrq->llUserID;
 	m_UsrIdToQListWidgetItem[llv_SenderId] = new QListWidgetItem();
 	
-	QMessageItem* widget = new QMessageItem(this, nullptr,QString("280761575"), QString("想要添加你为好友"), lpv_Usraddrq->llUserID, QMessageItem::RecvVerification);
+	QFrdListItem* widget = new QFrdListItem(this, nullptr,QString("280761575"), QString("想要添加你为好友"), lpv_Usraddrq->llUserID, E_ITEM_RECVVERIFICATION);
 	QSize size = m_UsrIdToQListWidgetItem[llv_SenderId]->sizeHint();
 	m_UsrIdToQListWidgetItem[llv_SenderId]->setSizeHint(QSize(size.width(), 72));
 	ui.m_pMessageListWidget->addItem(m_UsrIdToQListWidgetItem[llv_SenderId]);
@@ -206,12 +207,12 @@ void QClient::DealUserAddRQSLot(char *pszBuffer, int nLen)
 
 
 
-	/*connect同意/拒绝按钮*/
-	if (false == connect(widget->m_firmButton, &QPushButton::pressed, this, &QClient::SendAddFrdRsSlot))
-	{
-		qDebug() << "SendAddFrdRsSlot";
+	///*connect同意/拒绝按钮*/
+	//if (false == connect(widget->m_firmButton, &QPushButton::pressed, this, &QClient::SendAddFrdRsSlot))
+	//{
+	//	qDebug() << "SendAddFrdRsSlot";
 
-	}
+	//}
 	return;
 }
 
@@ -226,7 +227,7 @@ void  QClient::SendAddFrdRsSlot()
 	}
 	int nRow;
 	nRow = ui.m_pMessageListWidget->row(p);
-	QMessageItem * pWidget = static_cast<QMessageItem*>(ui.m_pMessageListWidget->itemWidget(p));
+	QFrdListItem * pWidget = static_cast<QFrdListItem*>(ui.m_pMessageListWidget->itemWidget(p));
 	long long llv_SenderId = pWidget->GetUserId();
 	STRU_USER_ADD_RS *rs = new STRU_USER_ADD_RS;
 	//test
@@ -243,12 +244,12 @@ void  QClient::SendAddFrdRsSlot()
 
 
 	/*把客户端B的同意窗口改成聊天窗口*/
-	//1.删除QMessageItem
+	//1.删除QFrdListItem
 	delete pWidget;
-	//2.添加新的QMessageItem
+	//2.添加新的QFrdListItem
 	m_UsrIdToQListWidgetItem[llv_SenderId]->~QListWidgetItem();
 	m_UsrIdToQListWidgetItem[llv_SenderId] = new QListWidgetItem;
-	QMessageItem* widget = new QMessageItem(this, nullptr, QString("aa"), QString("可以开始聊天了"), llv_SenderId, QMessageItem::USUER);
+	QFrdListItem* widget = new QFrdListItem(this, nullptr, QString("aa"), QString("可以开始聊天了"), llv_SenderId, E_ITEM_USUER);
 	QSize size = m_UsrIdToQListWidgetItem[llv_SenderId]->sizeHint();
 	m_UsrIdToQListWidgetItem[llv_SenderId]->setSizeHint(QSize(size.width(), 72));
 	ui.m_pMessageListWidget->addItem(m_UsrIdToQListWidgetItem[llv_SenderId]);
@@ -270,13 +271,13 @@ void QClient::DealUserAddRsSLot(char *pszBuffer, int nLen)
 	if (lpv_Useraddrs->result == SUCCEED)
 	{
 		/*把ReadyFriend中的信息写入好友信息表*/
-		QMessageItem * pWidget = static_cast<QMessageItem*>(ui.m_pMessageListWidget->itemWidget(m_UsrIdToQListWidgetItem[llv_SenderId]));
+		QFrdListItem * pWidget = static_cast<QFrdListItem*>(ui.m_pMessageListWidget->itemWidget(m_UsrIdToQListWidgetItem[llv_SenderId]));
 		delete pWidget;
 		pWidget = NULL;
 		m_UsrIdToQListWidgetItem[llv_SenderId]->~QListWidgetItem();
 		/*把消息列表中的等待验证变成与此人的聊天消息*/
 		m_UsrIdToQListWidgetItem[llv_SenderId] = new QListWidgetItem;
-		QMessageItem *widget = new QMessageItem(this, nullptr, QString("280761575"), QString("可以开始聊天了"), llv_SenderId, QMessageItem::USUER);
+		QFrdListItem *widget = new QFrdListItem(this, nullptr, QString("280761575"), QString("可以开始聊天了"), llv_SenderId, E_ITEM_USUER);
 		QSize size = m_UsrIdToQListWidgetItem[llv_SenderId]->sizeHint();
 		m_UsrIdToQListWidgetItem[llv_SenderId]->setSizeHint(QSize(size.width(), 72));
 		ui.m_pMessageListWidget->addItem(m_UsrIdToQListWidgetItem[llv_SenderId]);
@@ -299,58 +300,39 @@ void QClient::DealUserAddRsSLot(char *pszBuffer, int nLen)
 //on_XXX_clicked()只需实现XXX对应的槽函数 无需手动绑定，由moc完成
 void QClient::on_pushButton_SendMessage_clicked()
 {
+	bool isSending = true;
+	QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
 	QString msg = ui.textEdit_MessageInput->toPlainText();
 	ui.textEdit_MessageInput->setText("");
-	QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
+	
+	{
+		//发包
+		STRU_SEND_MSG_RQ rq;
+		rq.nPackNum = packId++;
+		rq.msgtype = PRIVATEMSG;
+		rq.packtype = PROTOCOL_SEND_MSG_RQ;
+		rq.llID = 280761575;
+		rq.llUserID = 280761575;
+		Qstringtochar(rq.szText, msg, msg.size());
+		//emit  sendchatmsgsignal((const char*)&rq, rq.nPackNum, sizeof(STRU_SEND_MSG_RQ));
 
-	//发包
-	STRU_SEND_MSG_RQ rq;
-	rq.nPackNum = packId++;
-	rq.msgtype = PRIVATEMSG;
-	rq.packtype = PROTOCOL_SEND_MSG_RQ;
-	rq.llID = 280761575;
-	rq.llUserID = 280761575;
-	Qstringtochar(rq.szText, msg, msg.size());
-
-	//emit  sendchatmsgsignal((const char*)&rq, rq.nPackNum, sizeof(STRU_SEND_MSG_RQ));
-	bool isSending = true; // 发送中
-	qDebug() << "addMessage" << msg << time << ui.listWidget_ChatList->count();
-	//if (ui.listWidget->count() % 2) {
-	if (isSending) {
-		dealMessageTime(time);
-		
-		QNChatMessage* messageW = new QNChatMessage(ui.listWidget_ChatList);
-		QListWidgetItem* item = new QListWidgetItem(ui.listWidget_ChatList);
-		dealMessage(messageW, item, msg, time, QNChatMessage::User_Me);
 	}
-	else {
-		bool isOver = true;
-		for (int i = ui.listWidget_ChatList->count() - 1; i > 0; i--) {
-			QNChatMessage* messageW = (QNChatMessage*)ui.listWidget_ChatList->itemWidget(ui.listWidget_ChatList->item(i));
-			if (messageW->text() == msg) {
-				isOver = false;
-				messageW->setTextSuccess();
-			}
-		}
-		if (isOver) {
-			dealMessageTime(time);
 
-			QNChatMessage* messageW = new QNChatMessage(ui.listWidget_ChatList->parentWidget());
-			QListWidgetItem* item = new QListWidgetItem(ui.listWidget_ChatList);
-			dealMessage(messageW, item, msg, time, QNChatMessage::User_Me);
-			messageW->setTextSuccess();
-		}
-	}
+	this->dealMessageTime(time);	
+	QNChatMessage* message = new QNChatMessage(ui.listWidget_ChatList);
+	QListWidgetItem* item = new QListWidgetItem(ui.listWidget_ChatList);
+	this->dealMessage(message, item, msg, time, QNChatMessage::User_Me);
+
 	ui.listWidget_ChatList->setCurrentRow(ui.listWidget_ChatList->count() - 1);
 }
 
 
 void QClient::dealMessage(QNChatMessage* messageW, QListWidgetItem* item, QString text, QString time, QNChatMessage::User_Type type)
 {
-	messageW->setFixedWidth(this->width());
+	messageW->setFixedWidth(ui.listWidget_ChatList->width());
 	QSize size = messageW->fontRect(text);
 	item->setSizeHint(size);
-	size = QSize(this->width(), 80);
+	size = QSize(ui.listWidget_ChatList->width(), 80);
 	messageW->resize(size);
 	messageW->setText(text, time, size, type);
 	ui.listWidget_ChatList->setItemWidget(item, messageW);
@@ -359,7 +341,9 @@ void QClient::dealMessage(QNChatMessage* messageW, QListWidgetItem* item, QStrin
 void QClient::dealMessageTime(QString curMsgTime)
 {
 	bool isShowTime = false;
-	if (ui.listWidget_ChatList->count() > 0) {
+
+	if (ui.listWidget_ChatList->count() > 0) 
+	{
 		QListWidgetItem* lastItem = ui.listWidget_ChatList->item(ui.listWidget_ChatList->count() - 1);
 		QNChatMessage* messageW = (QNChatMessage*)ui.listWidget_ChatList->itemWidget(lastItem);
 		int lastTime = messageW->time().toInt();
@@ -368,10 +352,13 @@ void QClient::dealMessageTime(QString curMsgTime)
 		isShowTime = ((curTime - lastTime) > 60); // 两个消息相差一分钟
 												  //        isShowTime = true;
 	}
-	else {
+	else 
+	{
 		isShowTime = true;
 	}
-	if (isShowTime) {
+
+	if (isShowTime) 
+	{
 		QNChatMessage* messageTime = new QNChatMessage(ui.listWidget_ChatList->parentWidget());
 		QListWidgetItem* itemTime = new QListWidgetItem(ui.listWidget_ChatList);
 
@@ -402,3 +389,64 @@ void QClient::mouseReleaseEvent(QMouseEvent* e)
 	move(x() + dx, y() + dy);
 }
 
+
+CLIENT_RESULT QClient::GetMsgList(long long userid, int &msgnum, QList<STRU_MSG_LIST> &msglist)
+{
+	const QString path = "./userData/280761575/MessageList.txt";
+	QString name;
+	QString remark;
+	QString msg;
+	QPixmap avatar;
+	STRU_MSG_LIST msgstru;
+	
+	QFile file(path);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		qDebug() << "GetMsgList() open file failed";
+		return CLIENT_ERROR;
+	}
+
+	bool flag = true;
+	while (!file.atEnd()) {
+		QByteArray line = file.readLine();
+		if (flag)
+		{
+			msgnum = std::stoi(line.toStdString());
+			flag = false;
+			continue;
+		}
+		GetUsrName(0, msgstru.name);
+		GetUsrRemark(0, msgstru.remark);
+		GetLastOfflineMsg(0, msgstru.msg);
+		GetUsrAvatar(0, msgstru.avatar);
+		msglist.push_back(msgstru);
+	}
+	return CLIENT_OK;
+}
+
+
+
+CLIENT_RESULT QClient::GetUsrRemark(long long usrid, QString& remark)
+{
+	remark = "remark";
+	return CLIENT_OK;
+}
+
+CLIENT_RESULT QClient::GetLastOfflineMsg(long long usrid, QString& msg)
+{
+	const QString path = "./userData";
+	msg = "this is the last message";
+	return CLIENT_OK;
+}
+CLIENT_RESULT QClient::GetUsrAvatar(long long usrid, QPixmap &avatar)
+{
+	const QString path = "./userData/280761575/FriendAvatar/18804635241.jpg";
+
+	avatar.load(path);
+	return CLIENT_OK;
+}
+CLIENT_RESULT QClient::GetUsrName(long long usrid, QString &name)
+{
+	name = "name";
+	return CLIENT_OK;
+}

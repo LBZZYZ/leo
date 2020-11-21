@@ -1,5 +1,4 @@
 ﻿#include "Mediator.h"
-#include "chat\qchatwindow.h"
 #include "Protocol\Protocol.h"
 #include  "qdebug.h"
 #include <QMessagebOX>
@@ -74,7 +73,6 @@ void Mediator::InitQClient(list<FRINENDLISTMSG> * pFriendlistmsg)
 {
 	
 	v = new QClient(pFriendlistmsg,this);
-	
 	v->show();
 
 	//---------------------------------------------连接信号与槽函数-----------------------------------------------------------------------
@@ -91,13 +89,8 @@ void Mediator::InitQClient(list<FRINENDLISTMSG> * pFriendlistmsg)
 /*初始化聊天窗口*/
 void Mediator::initchatwidget(QString name)//初始化聊天窗口
 {
-	 
-	//v->ui.widget = new QChatWindow();
-	//v->ui.widget->move(430,50);
-	//v->ui.widget->show();
 
 	//connect(v->ui.widget, SIGNAL(sendchatmsgsignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
-
 }
 
 

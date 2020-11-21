@@ -15,7 +15,7 @@ class QAvatar : public QPushButton
 	Q_OBJECT
 
 public:
-	QAvatar::QAvatar(QPixmap* avatar, QSize size, EN_AVATAR_SHAPE shape, int x, int y, bool isclickable, QWidget* parent); 
+	QAvatar(QPixmap* avatar, QSize size, EN_AVATAR_SHAPE shape, int x, int y, bool isclickable, QWidget* parent); 
 	QAvatar(QWidget *parent);
 	~QAvatar();
 

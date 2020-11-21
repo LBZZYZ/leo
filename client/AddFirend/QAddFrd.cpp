@@ -169,6 +169,8 @@ void QAddFrd::AddFriendSlot()
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
 		{
 			qDebug() << tr("打开失败") << file.OpenError;
+
+
 			file.close();
 			return;
 		}
