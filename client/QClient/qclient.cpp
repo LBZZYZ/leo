@@ -359,10 +359,10 @@ void QClient::dealMessageTime(QString curMsgTime)
 
 	if (isShowTime) 
 	{
-		QNChatMessage* messageTime = new QNChatMessage(ui.listWidget_ChatList->parentWidget());
+		QNChatMessage* messageTime = new QNChatMessage(ui.listWidget_ChatList);
 		QListWidgetItem* itemTime = new QListWidgetItem(ui.listWidget_ChatList);
 
-		QSize size = QSize(this->width(), 40);
+		QSize size = QSize(ui.listWidget_ChatList->width(), 40);
 		messageTime->resize(size);
 		itemTime->setSizeHint(size);
 		messageTime->setText(curMsgTime, curMsgTime, size, QNChatMessage::User_Time);

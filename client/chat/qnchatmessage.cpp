@@ -8,7 +8,7 @@
 #include <QDebug>
 
 
-QNChatMessage::QNChatMessage(QWidget *parent) : QWidget(parent)
+QNChatMessage::QNChatMessage(QWidget* parent) : QWidget(parent)
 {
 	qDebug() << parent->width();
 
@@ -32,7 +32,7 @@ QNChatMessage::QNChatMessage(QWidget *parent) : QWidget(parent)
 	m_loading->setAttribute(Qt::WA_TranslucentBackground, true);
 	m_loading->setAutoFillBackground(false);
 
-	
+
 }
 
 void QNChatMessage::setTextSuccess()
@@ -49,9 +49,9 @@ void QNChatMessage::setText(QString text, QString time, QSize allSize, QNChatMes
 	m_time = time;
 	m_curTime = QDateTime::fromTime_t(time.toInt()).toString("hh:mm");
 	m_allSize = allSize;
-	if (userType == User_Me) 
+	if (userType == User_Me)
 	{
-		if (!m_isSending) 
+		if (!m_isSending)
 		{
 			m_loading->move(m_kuangRightRect.x() - m_loading->width() - 10, m_kuangRightRect.y() + m_kuangRightRect.height() / 2 - m_loading->height() / 2);
 			//m_loading->move(0,0);
@@ -59,7 +59,7 @@ void QNChatMessage::setText(QString text, QString time, QSize allSize, QNChatMes
 			m_loadingMovie->start();
 		}
 	}
-	else 
+	else
 	{
 		m_loading->hide();
 	}
@@ -69,7 +69,7 @@ void QNChatMessage::setText(QString text, QString time, QSize allSize, QNChatMes
 
 QSize QNChatMessage::fontRect(QString str)
 {
-	
+
 	m_msg = str;
 	int minHei = 30;
 	int iconWH = 40;
@@ -94,12 +94,14 @@ QSize QNChatMessage::fontRect(QString str)
 	m_sanjiaoLeftRect = QRect(iconWH + iconSpaceW + iconRectW, m_lineHeight / 2, sanJiaoW, hei - m_lineHeight);
 	m_sanjiaoRightRect = QRect(781 - iconRectW - iconWH - iconSpaceW - sanJiaoW, m_lineHeight / 2, sanJiaoW, hei - m_lineHeight);
 
-	if (size.width() < (m_textWidth + m_spaceWid)) {
+	if (size.width() < (m_textWidth + m_spaceWid)) 
+	{
 		m_kuangLeftRect.setRect(m_sanjiaoLeftRect.x() + m_sanjiaoLeftRect.width(), m_lineHeight / 4 * 3, size.width() - m_spaceWid + 2 * textSpaceRect, hei - m_lineHeight);
 		m_kuangRightRect.setRect(781 - size.width() + m_spaceWid - 2 * textSpaceRect - iconWH - iconSpaceW - iconRectW - sanJiaoW,
 			m_lineHeight / 4 * 3, size.width() - m_spaceWid + 2 * textSpaceRect, hei - m_lineHeight);
 	}
-	else {
+	else 
+	{
 		m_kuangLeftRect.setRect(m_sanjiaoLeftRect.x() + m_sanjiaoLeftRect.width(), m_lineHeight / 4 * 3, m_kuangWidth, hei - m_lineHeight);
 		m_kuangRightRect.setRect(iconWH + kuangTMP + iconSpaceW + iconRectW - sanJiaoW, m_lineHeight / 4 * 3, m_kuangWidth, hei - m_lineHeight);
 	}
@@ -124,12 +126,12 @@ QSize QNChatMessage::getRealString(QString src)
 			nMaxWidth = m_textWidth;
 			int size = m_textWidth / fm.width(" ");
 			int num = fm.width(value) / m_textWidth;
-			int ttmp = num*fm.width(" ");
+			int ttmp = num * fm.width(" ");
 			num = (fm.width(value)) / m_textWidth;
 			nCount += num;
 			QString temp = "";
 			for (int i = 0; i < num; i++) {
-				temp += value.mid(i*size, (i + 1)*size) + "\n";
+				temp += value.mid(i * size, (i + 1) * size) + "\n";
 			}
 			src.replace(value, temp);
 		}
@@ -142,11 +144,11 @@ QSize QNChatMessage::getRealString(QString src)
 				nMaxWidth = m_textWidth;
 				int size = m_textWidth / fm.width(" ");
 				int num = fm.width(value) / m_textWidth;
-				num = ((i + num)*fm.width(" ") + fm.width(value)) / m_textWidth;
+				num = ((i + num) * fm.width(" ") + fm.width(value)) / m_textWidth;
 				nCount += num;
 				QString temp = "";
 				for (int i = 0; i < num; i++) {
-					temp += value.mid(i*size, (i + 1)*size) + "\n";
+					temp += value.mid(i * size, (i + 1) * size) + "\n";
 				}
 				src.replace(value, temp);
 			}
@@ -155,7 +157,7 @@ QSize QNChatMessage::getRealString(QString src)
 	return QSize(nMaxWidth + m_spaceWid, (nCount + 1) * m_lineHeight + 2 * m_lineHeight);
 }
 
-void QNChatMessage::paintEvent(QPaintEvent *event)
+void QNChatMessage::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event);
 
@@ -164,7 +166,7 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QBrush(Qt::white));
 
-	if (m_userType == User_Type::User_She) 
+	if (m_userType == User_Type::User_She)
 	{
 		//头像
 		//        painter.drawRoundedRect(m_iconLeftRect,m_iconLeftRect.width(),m_iconLeftRect.height());
@@ -204,9 +206,9 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 		QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
 		option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 		painter.setFont(this->font());
-		painter.drawText(0,200, m_msg);
+		painter.drawText(0, 200, m_msg);
 	}
-	else if (m_userType == User_Type::User_Me) 
+	else if (m_userType == User_Type::User_Me)
 	{
 		//头像
 		//        painter.drawRoundedRect(m_iconRightRect,m_iconRightRect.width(),m_iconRightRect.height());
@@ -230,12 +232,12 @@ void QNChatMessage::paintEvent(QPaintEvent *event)
 
 		//内容
 		QPen penText;
-		penText.setColor(Qt::black);
+		penText.setColor(Qt::white);
 		painter.setPen(penText);
 		QTextOption option(Qt::AlignLeft | Qt::AlignVCenter);
 		option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 		painter.setFont(this->font());
-		painter.drawText(20,10, m_msg);
+		painter.drawText(m_textRightRect, m_msg, option);
 	}
 	else if (m_userType == User_Type::User_Time) { // 时间
 		QPen penText;

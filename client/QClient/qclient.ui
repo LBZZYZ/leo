@@ -127,8 +127,8 @@ QTabBar::tab:hover{
      <rect>
       <x>400</x>
       <y>50</y>
-      <width>781</width>
-      <height>481</height>
+      <width>780</width>
+      <height>480</height>
      </rect>
     </property>
     <property name="styleSheet">
