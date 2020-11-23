@@ -6,9 +6,9 @@
 #include <qmovie.h>
 #include <Qsystemtrayicon>
 #include "qevent.h"
-#include "mybutton.h"
-#include "mybuttonone.h"
 #include <Protocol\Protocol.h>
+#include <QAvatar.h>
+
 #pragma warning (disable:4786)
 extern long long userId;
 class QQLogin : public QWidget
@@ -54,11 +54,10 @@ private:
 
 public:
 	QString passWord;
-	MyButton* mybutton;
-	Mybuttonone* my;
 	int timeId;
 	int timeId2;
 	int sec;
+	QAvatar* m_Avatar;
 	// int countflault;//注册窗口
 	Ui::QQLoginClass ui;
 

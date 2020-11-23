@@ -53,19 +53,10 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_mybutton.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="mybuttonone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QClient\qclient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_qclient.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QMessageItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QMessageItem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="QClient\QPersonList.cpp">
@@ -84,12 +75,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_QAddFrd.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_qchatwindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_qchatwindow.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_qnchatmessage.cpp">
@@ -212,9 +197,6 @@
     <ClCompile Include="QClient\QAvatar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mybutton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_QFrdListItem.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -231,9 +213,6 @@
     </CustomBuild>
     <CustomBuild Include="qqlogin.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="mybuttonone.h">
-      <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="QClient\qclient.h">
       <Filter>Header Files</Filter>
@@ -289,9 +268,6 @@
     <CustomBuild Include="QClient\QAvatar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="mybutton.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="QClient\QFrdListItem.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -300,14 +276,8 @@
     <ClInclude Include="GeneratedFiles\ui_qqlogin.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_qclient.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_QAddFrd.h">
       <Filter>Generated Files</Filter>
@@ -333,9 +303,6 @@
     <Image Include="Resources\down-arrow-hover.png" />
     <Image Include="Resources\down-arrow-pressed.png" />
     <Image Include="Resources\Image.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="QQLogin.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\FriendTreeWidget.qss" />

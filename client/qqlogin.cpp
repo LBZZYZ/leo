@@ -11,6 +11,8 @@
 #include <QMessagebox>
 #include "qdebug.h"
 #include <qpropertyanimation.h>		//渐变关闭头文件
+
+
 //#include "./Mediator/Mediator.h"
 using namespace std;
 class Mediator;
@@ -68,12 +70,9 @@ void QQLogin::InitWindow()
 //starMovie.start();
 
 //头像
-my = new Mybuttonone(ui.page);
-//mybutton = new MyButton(ui.page);
+m_Avatar = new QAvatar(ui.page);
+m_Avatar->installEventFilter(this);
 
-//事件过滤器
-//mybutton->installEventFilter(this);
-my->installEventFilter(this);
 ui.qLabel_HeadIcon->installEventFilter(this);
 ui.m_passwordlineedit->installEventFilter(this);
 ui.m_userNameCom->installEventFilter(this);
@@ -144,20 +143,20 @@ void QQLogin::mousePressEvent(QMouseEvent * event)
 bool QQLogin::eventFilter(QObject * Watched, QEvent * event)
 {
 	//头像选择动画
-	if (Watched == ui.qLabel_HeadIcon || Watched == my)
+	if (Watched == ui.qLabel_HeadIcon || Watched == m_Avatar)
 	{
 		if (event->type() == QEvent::Enter)
 		{
-			timeId = my->startTimer(10);		//设置一个十毫秒的定时器
+			timeId = m_Avatar->startTimer(10);		//设置一个十毫秒的定时器
 			if (timeId2 != 0)
-				my->killTimer(timeId2);
+				m_Avatar->killTimer(timeId2);
 			
 			return true;
 		}
 		if (event->type() == QEvent::Leave)
 		{
-			timeId2 = my->startTimer(10);
-			my->killTimer(timeId);
+			timeId2 = m_Avatar->startTimer(10);
+			m_Avatar->killTimer(timeId);
 
 			
 			return true;
@@ -168,21 +167,21 @@ bool QQLogin::eventFilter(QObject * Watched, QEvent * event)
 			if (qe->timerId() == timeId)
 			{
 				sec = 5;
-				if (my->geometry().x() >=100)
+				if (m_Avatar->geometry().x() >=100)
 				{
 					sec = 0;
 				}
-				my->move(my->geometry().x() + sec, my->geometry().y());
+				m_Avatar->move(m_Avatar->geometry().x() + sec, m_Avatar->geometry().y());
 				return true;
 			}
 			if (qe->timerId() == timeId2)
 			{
 				sec = 5;
-				if (my->geometry().x() <= 0)
+				if (m_Avatar->geometry().x() <= 0)
 				{
 					sec = 0;
 				}
-				my->move(my->geometry().x() - sec, my->geometry().y());
+				m_Avatar->move(m_Avatar->geometry().x() - sec, m_Avatar->geometry().y());
 				qe->accept();
 				return true;		
 			}
