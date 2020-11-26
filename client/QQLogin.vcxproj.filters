@@ -44,15 +44,6 @@
     <ClCompile Include="GeneratedFiles\qrc_qqlogin.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mybuttonone.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_mybuttonone.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mybutton.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="QClient\qclient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -161,9 +152,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_INet.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Protocol\Protocol.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="signup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -204,6 +192,9 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="QClient\QFrdListItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocol\Protocol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -288,13 +279,10 @@
     <ClInclude Include="Net\UDPNet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pack\Pack.h">
+    <ClInclude Include="UDPVerify\UDPVerify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Protocol\Protocol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UDPVerify\UDPVerify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
