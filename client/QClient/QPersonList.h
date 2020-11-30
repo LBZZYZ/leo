@@ -32,7 +32,7 @@ public:
 	void InitFriendTree(list<FRINENDLISTMSG> *);
 	void addMyFriendInfo(QTreeWidgetItem * pRootGroupItem,QFrdListItem*, FRINENDLISTMSG *pFriendlistmsg);
 	//------------------------加载好友列表---------------------------------
-	void mouseDoubleClickEvent(QMouseEvent *event);//鼠标双击事件 
+	//void mouseDoubleClickEvent(QMouseEvent *event);//鼠标双击事件 
 	bool eventFilter(QObject * Watched, QEvent * event);//事件处理器
 	void  ModifyNoteDlg(QFrdListItem*);
 	

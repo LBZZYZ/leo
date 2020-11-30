@@ -1,12 +1,9 @@
 ﻿#include "qclient.h"
 #include <QGraphicsDropShadowEffect>
 #include "qpushbutton.h"
-#include "qpixmap.h"
-#include "qbitmap.h"
 #include "qmenubar.h"
 #include "../QClient/QFrdListItem.h"
 #include "qdebug.h"
-#include <iostream>
 #include "Mediator.h"
 #include "qdatetime.h"
 #include "qstring.h"
@@ -17,56 +14,58 @@ QClient::QClient(list<FRINENDLISTMSG> * pFriendlistmsg, QObject *parent)
 {
 	ui.setupUi(this);
 
-	setAttribute(Qt::WA_DeleteOnClose);
-	InitWindow(pFriendlistmsg);
-	this->loadStyleSheet("QClient/QFreindTreeWidegt.css");
-	
 	addui = nullptr;
-
-	connect(ui.textEdit_MessageInput, &QTextEdit::textChanged, this, &QClient::editwordcount);
-	
+	//InitWindow(pFriendlistmsg);
+	//ConnectSignalSlot();
 }
 
 QClient::~QClient()
 {
-	delete m_pFriendList;
-	m_pFriendList = nullptr;
+	if (m_pFriendList != nullptr)
+	{
+		delete m_pFriendList;
+		m_pFriendList = nullptr;
+	}
 
+
+}
+
+CLIENT_RESULT QClient::ConnectSignalSlot(void)
+{
+	connect(ui.textEdit_MessageInput, &QTextEdit::textChanged, this, &QClient::editwordcount);
+
+	connect(ui.m_btnMin, &QPushButton::pressed, this, &QClient::showMinimized);
+	connect(ui.m_btnMax, &QPushButton::pressed, this, &QClient::showMaximized);
+	connect(ui.m_btnClose, &QPushButton::pressed, this, &QClient::qqclientclose);
+	//connect(addui, SIGNAL(adduiclose()), this, SLOT(adduiclosed()));
+
+	///*connect同意/拒绝按钮*/
+	//if (false == connect(widget->m_firmButton, &QPushButton::pressed, this, &QClient::SendAddFrdRsSlot))
+	//{
+	//	qDebug() << "SendAddFrdRsSlot";
+
+	//}
+	return CLIENT_OK;
 }
 
 void QClient::InitWindow(list<FRINENDLISTMSG>* pFriendlistmsg)
 {
-	//hide Widget of right
-	//ui.listWidget_ChatList->hide();
-	//ui.textEdit_MessageInput->hide();
-	//ui.pushButton_SendMessage->hide();
-
+	setAttribute(Qt::WA_DeleteOnClose);
+	//this->loadStyleSheet("QClient/QFreindTreeWidegt.css");
 	//无边框窗口
 	this->setWindowFlags(Qt::FramelessWindowHint |/* Qt::WindowStaysOnTopHint|*/ Qt::
 		WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
 	//窗口透明
 	//this->setAttribute(Qt::WA_TranslucentBackground, true);
-
+	ui.listWidget_ChatList->setFrameShape(QListWidget::NoFrame);
+	ui.m_pMessageListWidget->setFrameShape(QListWidget::NoFrame);
+	ui.tabWidget->setDocumentMode(true);
 	//窗口阴影
-	QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
-	effect->setOffset(4, 4);
-	effect->setColor(QColor(0, 0, 0, 80));
-	effect->setBlurRadius(8);
-	ui.frame->setGraphicsEffect(effect);
-
-	QPushButton* closebutton = new QPushButton(ui.frame);
-	QPixmap pixmap("Resources/TopbuttonBack.png");
-	closebutton->resize(QSize(48, 32));
-	closebutton->setMask(QBitmap(pixmap.mask()));
-	closebutton->setGeometry(this->width() - closebutton->width(), 0, 48, 32);
-	closebutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/closebutton.png);border-top-right-radius:2px}QPushButton:hover{border:none;background-color:red;}"));
-
-	QPushButton* minbutton = new QPushButton(ui.frame);
-	minbutton->resize(QSize(48, 32));
-	minbutton->setMask(QBitmap(pixmap.mask()));
-	minbutton->setGeometry(this->width() - closebutton->width() - minbutton->width(), 0, 40, 32);
-	minbutton->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 0,0);border-image:url(Resources/minbutton.png);}\n"
-		"QPushButton:hover{border:none;background-color:#BDBDBD;}"));
+	//QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
+	//effect->setOffset(4, 4);
+	//effect->setColor(QColor(0, 0, 0, 80));
+	//effect->setBlurRadius(8);
+	//ui.frame->setGraphicsEffect(effect);
 
 
 	if (CLIENT_ERROR == this->UiInitMessageList())
@@ -78,10 +77,8 @@ void QClient::InitWindow(list<FRINENDLISTMSG>* pFriendlistmsg)
 		qDebug() << "Function UiInitFriendList error";
 	}
 
-	connect(closebutton, &QPushButton::pressed, this, &QClient::qqclientclose);
-	connect(minbutton, &QPushButton::pressed, this, &QClient::showMinimized);
-}
 
+}
 
 CLIENT_RESULT QClient::UiInitMessageList(void)
 {
@@ -97,10 +94,12 @@ CLIENT_RESULT QClient::UiInitMessageList(void)
 	for (int index = 0; index < msgnum; ++index)
 	{
 		QItemBase* item = new QMsgListItem(this, msglist[index].avatar, msglist[index].name, msglist[index].remark);
-		ITEM[index].setSizeHint(QSize(this->ui.m_pMessageListWidget->width(), 50));
+		ITEM[index].setSizeHint(QSize(ui.tabWidget->widget(0)->width(), 50));
+		qDebug() << ui.m_pMessageListWidget->width() << " " << this->ui.m_pMessageListWidget->height() << ui.m_pMessageListWidget->size().width();
 		ui.m_pMessageListWidget->addItem(&ITEM[index]);
 		//item->setSizeIncrement(size.width(), 50);
 		ui.m_pMessageListWidget->setItemWidget(&ITEM[index], item);
+
 	}
 
 	return CLIENT_OK;
@@ -134,7 +133,6 @@ void  QClient::editwordcount()
 
 }
 
-
 void QClient::loadStyleSheet(const QString &sheetName)
 {
 	QFile file(sheetName);
@@ -154,7 +152,6 @@ void QClient::InitAddFriendUi()//初始化添加好友窗口
 		addui = new QAddFrd();
 		addui->show();
 		emit IsAdduiExist(true);//发送添加好友窗口存在的信号
-		connect(addui, SIGNAL(adduiclose()), this, SLOT(adduiclosed()));
 	}
 }
 
@@ -206,13 +203,6 @@ void QClient::DealUserAddRQSLot(char *pszBuffer, int nLen)
 	ui.m_pMessageListWidget->setItemWidget(m_UsrIdToQListWidgetItem[llv_SenderId], widget);
 
 
-
-	///*connect同意/拒绝按钮*/
-	//if (false == connect(widget->m_firmButton, &QPushButton::pressed, this, &QClient::SendAddFrdRsSlot))
-	//{
-	//	qDebug() << "SendAddFrdRsSlot";
-
-	//}
 	return;
 }
 
@@ -293,9 +283,6 @@ void QClient::DealUserAddRsSLot(char *pszBuffer, int nLen)
 	qDebug() << "DealUserAddRSSlot";
 }
 
-
-
-
 /*发送按钮点击事件*/
 //on_XXX_clicked()只需实现XXX对应的槽函数 无需手动绑定，由moc完成
 void QClient::on_pushButton_SendMessage_clicked()
@@ -368,25 +355,6 @@ void QClient::dealMessageTime(QString curMsgTime)
 		messageTime->setText(curMsgTime, curMsgTime, size, QNChatMessage::User_Time);
 		ui.listWidget_ChatList->setItemWidget(itemTime, messageTime);
 	}
-}
-
-
-void QClient::mousePressEvent(QMouseEvent* e)
-{
-	last = e->globalPos();
-}
-void QClient::mouseMoveEvent(QMouseEvent* e)
-{
-	int dx = e->globalX() - last.x();
-	int dy = e->globalY() - last.y();
-	last = e->globalPos();
-	move(x() + dx, y() + dy);
-}
-void QClient::mouseReleaseEvent(QMouseEvent* e)
-{
-	int dx = e->globalX() - last.x();
-	int dy = e->globalY() - last.y();
-	move(x() + dx, y() + dy);
 }
 
 

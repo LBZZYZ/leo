@@ -52,3 +52,4 @@ ITEM_RESULT QFrdListItem::ItemSetSignatrue(QString signature)
 
 
 
+

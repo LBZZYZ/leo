@@ -47,7 +47,7 @@ protected:
 	QAction* action[4];											 //菜单动作
 	QPoint last;
 	map<long long, QListWidgetItem*> m_UsrIdToQListWidgetItem;
-	
+
 
 	typedef struct STRU_MSG_LIST
 	{
@@ -59,9 +59,6 @@ protected:
 	}STRU_MSG_LIST;
 	QList<STRU_MSG_LIST> msglist;
 protected:
-	void mousePressEvent(QMouseEvent* e);
-	void mouseMoveEvent(QMouseEvent* e);
-	void mouseReleaseEvent(QMouseEvent* e);
 	void dealMessage(QNChatMessage* messageW, QListWidgetItem* item, QString text, QString time, QNChatMessage::User_Type type);
 	void dealMessageTime(QString curMsgTime);
 	void InitWindow(list<FRINENDLISTMSG>*);
@@ -76,6 +73,7 @@ protected:
 	CLIENT_RESULT GetUsrAvatar(long long usrid, QPixmap& avatar);
 	CLIENT_RESULT GetUsrName(long long usrid, QString &name);
 	
+	CLIENT_RESULT ConnectSignalSlot(void);
 public slots:
 	void InitAddFriendUi();
 	void qqclientclose();

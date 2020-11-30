@@ -1,5 +1,5 @@
 #include "QItemBase.h"
-
+#include <QDebug>
 QItemBase::QItemBase(QWidget *parent)
 	: QWidget(parent)
 {
@@ -48,4 +48,14 @@ ITEM_RESULT QItemBase::ItemSetRemark(QString remark)
 	m_pNameLable->setStyleSheet("background-color:rgb(0,0,0,0);");
 
 	return ITEM_OK;
+}
+
+
+void QItemBase::mouseDoubleClickEvent(QMouseEvent* event)
+{
+	qDebug() << "QItemBase mouse event";
+	//if (event->button() == Qt::LeftButton)
+	//{
+	//	emit openchatwidget(item->GetName());
+	//}
 }

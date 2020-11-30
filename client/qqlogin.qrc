@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="/new/prefix1">
+    <file>Resources/maxbutton.png</file>
     <file>Resources/QQImage.png</file>
-    <file>Resources/LoginBackground.png</file>
+    <file>Resources/closebutton.png</file>
+    <file>Resources/minbutton.png</file>
   </qresource>
 </RCC>

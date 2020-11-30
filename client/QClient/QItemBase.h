@@ -30,6 +30,8 @@ public:
 	ITEM_RESULT ItemSetRemark(QString remark);
 
 protected:
+	void mouseDoubleClickEvent(QMouseEvent* event);	//rewrite mouse event
+protected:
 
 	long long m_UserId;
 	QAvatar *m_Avatar;

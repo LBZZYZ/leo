@@ -287,13 +287,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\down-arrow.png" />
-    <Image Include="Resources\down-arrow-hover.png" />
-    <Image Include="Resources\down-arrow-pressed.png" />
-    <Image Include="Resources\Image.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FriendTreeWidget.qss" />
     <None Include="QQLogin.aps" />
     <None Include="QQLogin.pri" />
     <None Include="QQLogin.pro" />

@@ -16,6 +16,7 @@ QPersonList::QPersonList(list<FRINENDLISTMSG> * pFriendlistmsg, QWidget *parent)
 	TempDeleteItem = nullptr;
 	InitMenu();
 	setFixedSize(parent->width(), parent->height());
+	qDebug() << parent->width() << parent->height();
 	InitFriendTree(pFriendlistmsg);
 
 	m_pModifyGroupNameEdit = new QLineEdit("未命名", this);
@@ -109,7 +110,7 @@ void QPersonList::addMyFriendInfo(QTreeWidgetItem* pRootGroupItem, QFrdListItem*
 {
 	QTreeWidgetItem *pChild = new QTreeWidgetItem();
 	pChild->setSizeHint(0, QSize(size().width(),70));
-
+	qDebug() << size().width();
 	if (pContactItem != nullptr)
 	{
 		pChild->setData(0, Qt::UserRole, 1);
@@ -301,25 +302,25 @@ void QPersonList::mousePressEvent(QMouseEvent *event)//鼠标点击事件
 
 }
 
-/*双击左键发送打开聊天窗口的信号*/
-void QPersonList::mouseDoubleClickEvent(QMouseEvent *event)
-{
-	QTreeWidgetItem* tempItem = itemAt(event->pos());
-	if (tempItem == nullptr || tempItem->data(0, Qt::UserRole) == 0)
-	{
-		return;
-	}
-
-	if (event->button() == Qt::LeftButton)
-	{
-		if (tempItem->data(0, Qt::UserRole) == 1)//是否是好友item
-		{
-			QFrdListItem* item = (QFrdListItem*)itemWidget(tempItem, 0);
-			emit openchatwidget(item->GetName());
-		}
-	}
-
-}
+///*双击左键发送打开聊天窗口的信号*/
+//void QPersonList::mouseDoubleClickEvent(QMouseEvent *event)
+//{
+//	QTreeWidgetItem* tempItem = itemAt(event->pos());
+//	if (tempItem == nullptr || tempItem->data(0, Qt::UserRole) == 0)
+//	{
+//		return;
+//	}
+//
+//	if (event->button() == Qt::LeftButton)
+//	{
+//		if (tempItem->data(0, Qt::UserRole) == 1)//是否是好友item
+//		{
+//			QFrdListItem* item = (QFrdListItem*)itemWidget(tempItem, 0);
+//			emit openchatwidget(item->GetName());
+//		}
+//	}
+//
+//}
 
 //mouse right btn click event
 void QPersonList::contextMenuEvent(QContextMenuEvent* event) 
