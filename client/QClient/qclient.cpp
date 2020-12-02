@@ -15,8 +15,10 @@ QClient::QClient(list<FRINENDLISTMSG> * pFriendlistmsg, QObject *parent)
 	ui.setupUi(this);
 
 	addui = nullptr;
-	//InitWindow(pFriendlistmsg);
-	//ConnectSignalSlot();
+	InitWindow(pFriendlistmsg);
+	ConnectSignalSlot();
+
+
 }
 
 QClient::~QClient()
@@ -33,18 +35,11 @@ QClient::~QClient()
 CLIENT_RESULT QClient::ConnectSignalSlot(void)
 {
 	connect(ui.textEdit_MessageInput, &QTextEdit::textChanged, this, &QClient::editwordcount);
-
 	connect(ui.m_btnMin, &QPushButton::pressed, this, &QClient::showMinimized);
 	connect(ui.m_btnMax, &QPushButton::pressed, this, &QClient::showMaximized);
-	connect(ui.m_btnClose, &QPushButton::pressed, this, &QClient::qqclientclose);
+	connect(ui.m_btnClose, &QPushButton::pressed, this, &QClient::close);
 	//connect(addui, SIGNAL(adduiclose()), this, SLOT(adduiclosed()));
 
-	///*connect同意/拒绝按钮*/
-	//if (false == connect(widget->m_firmButton, &QPushButton::pressed, this, &QClient::SendAddFrdRsSlot))
-	//{
-	//	qDebug() << "SendAddFrdRsSlot";
-
-	//}
 	return CLIENT_OK;
 }
 
@@ -60,12 +55,6 @@ void QClient::InitWindow(list<FRINENDLISTMSG>* pFriendlistmsg)
 	ui.listWidget_ChatList->setFrameShape(QListWidget::NoFrame);
 	ui.m_pMessageListWidget->setFrameShape(QListWidget::NoFrame);
 	ui.tabWidget->setDocumentMode(true);
-	//窗口阴影
-	//QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
-	//effect->setOffset(4, 4);
-	//effect->setColor(QColor(0, 0, 0, 80));
-	//effect->setBlurRadius(8);
-	//ui.frame->setGraphicsEffect(effect);
 
 
 	if (CLIENT_ERROR == this->UiInitMessageList())
@@ -83,7 +72,7 @@ void QClient::InitWindow(list<FRINENDLISTMSG>* pFriendlistmsg)
 CLIENT_RESULT QClient::UiInitMessageList(void)
 {
 	//get local message list
-	int msgnum = 3;
+	int msgnum = 1;
 	
 	this->GetMsgList(0/*userid*/, msgnum, msglist);
 
@@ -94,8 +83,8 @@ CLIENT_RESULT QClient::UiInitMessageList(void)
 	for (int index = 0; index < msgnum; ++index)
 	{
 		QItemBase* item = new QMsgListItem(this, msglist[index].avatar, msglist[index].name, msglist[index].remark);
-		ITEM[index].setSizeHint(QSize(ui.tabWidget->widget(0)->width(), 50));
-		qDebug() << ui.m_pMessageListWidget->width() << " " << this->ui.m_pMessageListWidget->height() << ui.m_pMessageListWidget->size().width();
+		//ITEM[index].setSizeHint(QSize(ui.tabWidget->widget(0)->width(), 100));
+		//qDebug() << ui.m_pMessageListWidget->width() << " " << this->ui.m_pMessageListWidget->height() << ui.m_pMessageListWidget->size().width();
 		ui.m_pMessageListWidget->addItem(&ITEM[index]);
 		//item->setSizeIncrement(size.width(), 50);
 		ui.m_pMessageListWidget->setItemWidget(&ITEM[index], item);
@@ -155,15 +144,6 @@ void QClient::InitAddFriendUi()//初始化添加好友窗口
 	}
 }
 
-void QClient::qqclientclose()//客户端关闭
-{
-	if (addui != nullptr)
-	{
-		addui->close();
-	}
-	this->close();
-}
-
 void QClient::adduiclosed()
 {
 	emit IsAdduiExist(false);
@@ -171,7 +151,6 @@ void QClient::adduiclosed()
 	addui->close();
 	addui = nullptr;
 }
-
 
 /*把等待验证的信息放到消息列表中A*/
 void QClient::DealAddMsgToMsgListSignal(long long ID, const char* namestr, int type)

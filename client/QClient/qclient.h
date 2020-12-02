@@ -11,16 +11,6 @@
 #include "qnchatmessage.h"
 #include <QMouseEvent>
 #include <QAvatar.h>
-/*
-* UI Widget
-* textEdit_MessageInput
-* pushButton_SendMessage
-* listWidget_ChatList
-* 
-* m_pMessageListWidget
-* 
-* 
-*/
 
 #define CLIENT_OK      0
 #define CLIENT_ERROR  -1
@@ -48,7 +38,6 @@ protected:
 	QPoint last;
 	map<long long, QListWidgetItem*> m_UsrIdToQListWidgetItem;
 
-
 	typedef struct STRU_MSG_LIST
 	{
 		QPixmap avatar;
@@ -72,11 +61,10 @@ protected:
 	CLIENT_RESULT GetLastOfflineMsg(long long usrid, QString &msg);
 	CLIENT_RESULT GetUsrAvatar(long long usrid, QPixmap& avatar);
 	CLIENT_RESULT GetUsrName(long long usrid, QString &name);
-	
 	CLIENT_RESULT ConnectSignalSlot(void);
+
 public slots:
 	void InitAddFriendUi();
-	void qqclientclose();
 	void adduiclosed();
 	void DealAddMsgToMsgListSignal(long long, const char*, int);
 	void DealUserAddRQSLot(char* pszBuffer, int nLen);
