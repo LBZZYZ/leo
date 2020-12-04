@@ -197,6 +197,7 @@
     <ClCompile Include="Protocol\Protocol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="protobuf\leo.pb.cc" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qqlogin.ui">
@@ -283,6 +284,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Protocol\Protocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="protobuf\leo.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

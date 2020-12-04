@@ -88,7 +88,6 @@ CLIENT_RESULT QClient::UiInitMessageList(void)
 		ui.m_pMessageListWidget->addItem(&ITEM[index]);
 		//item->setSizeIncrement(size.width(), 50);
 		ui.m_pMessageListWidget->setItemWidget(&ITEM[index], item);
-
 	}
 
 	return CLIENT_OK;
