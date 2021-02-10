@@ -1,25 +1,23 @@
-INCLUDE=-I../../include -I/usr/local/mysql/include
-
 .PHONY:clean print
 
 SRC=$(wildcard *.c)
-DES=$(patsubst %.c,%.o,$(SRC))
+OBJ=$(patsubst %.c,%.o,$(SRC))
 LIB=libkernel.a
 
-$(LIB):$(DES)
+$(LIB):$(OBJ)
 	$(AR) rcs $@ $^
 	mv $@ ../../lib
 
-$(DES):$(SRC)
+$(OBJ):$(SRC)
 	$(CC) $(CFLAGS) $^
 
 print:
 	@echo "$(SRC)"
-	@echo "$(DES)"
+	@echo "$(OBJ)"
 clean:
 	$(RM) *.o
 
 install:
 	-sudo cp $(TARGET) /usr/bin
 distclean:
-	-sudo rm /usr/bin/$(TARGET) -rf4
+	-sudo rm /usr/bin/$(TARGET) -rf

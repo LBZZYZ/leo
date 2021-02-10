@@ -1,5 +1,3 @@
-INCLUDE=-I../../include -I/usr/include/mysql/
-
 .PHONY:clean print
 
 SRC=$(wildcard *.cpp) $(wildcard *.c)

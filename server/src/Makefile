@@ -1,13 +1,12 @@
-INCLUDE=-I../include -I/usr/local/mysql/include
-
 .PHONY:clean print
 
-SRC=$(wildcard *.cpp) $(wildcard *.c)
-RDES=$(patsubst %.c,%.o,$(SRC)) $(patsubst %.cpp,%.o,$(SRC))
-DES=$(filter %.o,$(RDES))
+SRC := $(wildcard *.cpp) $(wildcard *.c)
+OBJ := $(patsubst %.c,%.o,$(SRC)) $(patsubst %.cpp,%.o,$(SRC))
+DES := $(filter %.o,$(OBJ))
 
 $(TARGET):$(DES)
-	gcc -o $(TARGET) $^ $(LDFLAGS)
+	$(CC) -o $(TARGET) $^ $(LDFLAGS)
+	
 $(DES):$(SRC)
 	$(CC) $(CFLAGS) $^
 

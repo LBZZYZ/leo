@@ -1,6 +1,6 @@
 #define dir var
 export ROOT_DIR := ./
-export INCLUDE_DIR := $(ROOT_DIR)/include
+export INCLUDE_DIR := $(ROOT_DIR)/include -I/usr/mysql/include
 export LIB_DIR := $(ROOT_DIR)/lib
 export SOURCE_DIR := $(ROOT_DIR)/src
 
@@ -10,6 +10,10 @@ SUB_DIRS += $(ROOT_DIR)/src/threadpool
 SUB_DIRS += $(ROOT_DIR)/src/mysql 
 SUB_DIRS += $(ROOT_DIR)/src 
 SUB_DIRS += $(ROOT_DIR)/src/ccl-0.1.1
+
+
+#shell cmd
+shell mkdir lib
 
 
 #define complite flags
@@ -32,7 +36,9 @@ $(SUB_DIRS):
 	@+make -C $@
 
 clean:
-	@for i in $(SUB_DIRS);do (cd $$i && make clean) || exit "$$?";done
+	@for i in $(SUB_DIRS);do \
+	    (cd $$i && make clean) || exit "$$?"; \
+	done
 	@rm -rf $(LIB_DIR)/*
 	
 	
