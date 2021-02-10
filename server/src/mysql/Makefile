@@ -1,10 +1,5 @@
-CC=gcc
-CXX=g++
 INCLUDE=-I../../include -I/usr/include/mysql/
-CFLAGS= -g -Wall -c $(INCLUDE)
-CPPFLAGS=-E -D
-CXXFLAGS=
-RM=-rm -rf
+
 .PHONY:clean print
 
 SRC=$(wildcard *.cpp) $(wildcard *.c)

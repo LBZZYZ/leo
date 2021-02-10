@@ -1,12 +1,5 @@
-TARGET=server
-CC=gcc
-CXX=g++
 INCLUDE=-I../include -I/usr/local/mysql/include
-CFLAGS= -g -Wall -c $(INCLUDE)
-CPPFLAGS=-E -D
-CXXFLAGS=
-LDFLAGS=-lpthread -lcrypto -lmysqlclient -llibmysql.so -L../lib -L/usr/lib64/mysql
-RM=-rm -rf
+
 .PHONY:clean print
 
 SRC=$(wildcard *.cpp) $(wildcard *.c)
@@ -14,7 +7,7 @@ RDES=$(patsubst %.c,%.o,$(SRC)) $(patsubst %.cpp,%.o,$(SRC))
 DES=$(filter %.o,$(RDES))
 
 $(TARGET):$(DES)
-	gcc -o $(TARGET) $^ -L../lib -L/usr/lib64/mysql -lnet -lkernel -lmysql -lthreadpool -lpthread -lmysqlclient -lccl
+	gcc -o $(TARGET) $^ $(LDFLAGS)
 $(DES):$(SRC)
 	$(CC) $(CFLAGS) $^
 
