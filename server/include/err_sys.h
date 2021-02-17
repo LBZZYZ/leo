@@ -1,6 +1,14 @@
-#ifndef _ERR_SYS_H
-#define _ERR_SYS_H
+#ifndef _ERR_SYS_H_
+#define _ERR_SYS_H_
+
 #include <stdio.h>
 #include <stdlib.h>
-void err_sys(const char*,int);
+
+//This is a error process api
+void err_sys(const char* str, int nstate)
+{
+	perror(str);
+	exit(nstate);
+}
+
 #endif
