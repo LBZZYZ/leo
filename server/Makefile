@@ -1,19 +1,21 @@
 #define dir var
-export ROOT_DIR := ./
-export INCLUDE_DIR := $(ROOT_DIR)/include -I/usr/mysql/include
+export ROOT_DIR := $(shell pwd)
+export INCLUDE_DIR := -I$(ROOT_DIR)/include -I/usr/mysql/include
 export LIB_DIR := $(ROOT_DIR)/lib
 export SOURCE_DIR := $(ROOT_DIR)/src
 
-SUB_DIRS += $(ROOT_DIR)/src/net
-SUB_DIRS += $(ROOT_DIR)/src/kernel 
-SUB_DIRS += $(ROOT_DIR)/src/threadpool 
-SUB_DIRS += $(ROOT_DIR)/src/mysql 
-SUB_DIRS += $(ROOT_DIR)/src 
+SUB_DIRS = $(ROOT_DIR)/src/net
+SUB_DIRS += $(ROOT_DIR)/src/kernel
+SUB_DIRS += $(ROOT_DIR)/src/threadpool
+SUB_DIRS += $(ROOT_DIR)/src/mysql
 SUB_DIRS += $(ROOT_DIR)/src/ccl-0.1.1
+SUB_DIRS += $(ROOT_DIR)/src
 
 
 #shell cmd
-shell mkdir lib
+ifneq ($(LIB_DIR), $(wildcard $(LIB_DIR)))
+$(shell mkdir lib)
+endif
 
 
 #define complite flags
@@ -29,8 +31,7 @@ export RM := -rm -rf
 .PHONY:$(SUB_DIRS)
 .PHONY:clean
 
-subdirs:
-	$(SUB_DIRS)
+subdirs: $(SUB_DIRS)
 
 $(SUB_DIRS):
 	@+make -C $@
