@@ -5,10 +5,6 @@
 #include <stdlib.h>
 
 //This is a error process api
-void err_sys(const char* str, int nstate)
-{
-	perror(str);
-	exit(nstate);
-}
+void err_sys(const char* str, int nstate);
 
-#endif
+#endif //_ERR_SYS_H_
