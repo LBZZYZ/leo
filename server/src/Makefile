@@ -15,7 +15,7 @@ print:
 	@echo "$(DES)"
 
 clean:
-	$(RM) $(OBJ)
+	$(RM) *.o
 	$(RM) $(TARGET)
 
 install:

@@ -4,7 +4,7 @@ export INCLUDE_DIR := -I$(ROOT_DIR)/include -I/usr/mysql/include
 export LIB_DIR := $(ROOT_DIR)/lib
 export SOURCE_DIR := $(ROOT_DIR)/src
 
-SUB_DIRS = $(ROOT_DIR)/src/net
+SUB_DIRS := $(ROOT_DIR)/src/net
 SUB_DIRS += $(ROOT_DIR)/src/kernel
 SUB_DIRS += $(ROOT_DIR)/src/threadpool
 SUB_DIRS += $(ROOT_DIR)/src/mysql
