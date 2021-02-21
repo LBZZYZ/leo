@@ -11,8 +11,8 @@
 #include "kernel.h"
 #include "pool.h"
 
-#define	TCPSERVERIP  	"192.168.0.188"
-#define UDPSERVERIP     "192.168.0.188"
+#define	TCPSERVERIP  	"172.30.225.204"
+#define UDPSERVERIP     "172.30.225.204"
 #define	TCPSERVERPORT	8000
 #define	UDPSERVERPORT	4567
 #define	TCPCLIENTPORT	8000

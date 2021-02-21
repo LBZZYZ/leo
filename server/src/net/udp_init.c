@@ -20,12 +20,12 @@ int udp_init()
 		return -1;
 	}
 	/*设置端口可重用*/
-	/*int on = 1;
+	int on = 1;
 	if(-1 == setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)))
 	{
 		perror("setsockopt");
 		return -1;
-	}*/
+	}
 	/*绑定服务器*/
 	if(-1 == (bind(sockfd,(const struct sockaddr*)&serveraddr,sizeof(serveraddr))))
 	{
