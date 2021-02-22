@@ -56,7 +56,7 @@ void connect_client(pool_t *pool)
 	udpfd = udp_init();
 	assert(udpfd > 0);
 
-	epollfd = epoll_create1(0)))
+	epollfd = epoll_create1(0);
 	assert(epollfd != -1);
 
 	epoll_add_event(epollfd,listenfd);
