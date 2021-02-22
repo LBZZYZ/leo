@@ -26,7 +26,7 @@
 int tcp_init();
 int udp_init();
 /*epoll等待tcp/udp读写*/
-void net_open(pool_t *pool);
+void connect_client(pool_t *pool);
 /*发送网络数据*/
 void send_udp_data(int sockfd,const char *buf,int len,const struct sockaddr* dest_addr,socklen_t socklen);
 void send_tcp_data(int sockfd,const char *buf,int len);

@@ -38,7 +38,7 @@ int main()
 	pool_t *pool = Thread_Create(20, 10, 10);
 
 	//启动网络模块
-	net_open(pool);
+	connect_client(pool);
 	
 	return 0;
 }
