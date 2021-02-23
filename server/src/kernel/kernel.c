@@ -112,7 +112,7 @@ KNL_RESULT knl_insert_user_online(void *args)
 KNL_RESULT knl_registe(void *clientdata)
 {
 
-	client_data *c_data = (client_data*)clientdata;
+	job_queue_item *c_data = (job_queue_item*)clientdata;
 	c_data->w_length = sizeof(registe_rs_t);
 
 	registe_rq_t *rq = (registe_rq_t *)(c_data->read_buf);
@@ -140,7 +140,7 @@ KNL_RESULT knl_registe(void *clientdata)
 
 KNL_RESULT knl_login(void *clientdata)
 {
-	struct client_data *c_data = (struct client_data*)clientdata;
+	struct job_queue_item *c_data = (struct job_queue_item*)clientdata;
 	c_data->w_length = sizeof(login_rs_t);
 
 	login_rs_t *c_rs = (login_rs_t*)c_data->write_buf;
@@ -172,7 +172,7 @@ KNL_RESULT knl_search_user(void *clientdata)
 {
 
 	/*获取查找好友请求包*/
-	struct client_data *c_data = (struct client_data*)clientdata;
+	struct job_queue_item *c_data = (struct job_queue_item*)clientdata;
 	c_data->w_length = sizeof(search_rs_t);
 
 	search_rq_t *s_rq = (search_rq_t*)c_data->read_buf;
@@ -227,7 +227,7 @@ KNL_RESULT knl_add_user(void *clientdata)
 		return KNL_INVALID;
 	}
 
-	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
+	struct job_queue_item *lpv_Clientdata = (struct job_queue_item*)clientdata;
 	add_rq_t *lpv_Addrq = (add_rq_t*)lpv_Clientdata->read_buf;
 
 
@@ -255,7 +255,7 @@ KNL_RESULT knl_add_user_rs(void *clientdata)
 	{
 		return KNL_INVALID;
 	};
-	client_data *lpv_Clientdata = (client_data*)clientdata;
+	job_queue_item *lpv_Clientdata = (job_queue_item*)clientdata;
 	add_rs_t *lpv_Addrs = (add_rs_t*)lpv_Clientdata->read_buf;
 
 	//客户端在线
@@ -296,7 +296,7 @@ KNL_RESULT knl_add_user_rs(void *clientdata)
 int knl_send_msg(void* clientdata)
 {
 	if(NULL == clientdata)exit(EXIT_FAILURE);
-	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
+	struct job_queue_item *lpv_Clientdata = (struct job_queue_item*)clientdata;
 	msg_rq_t *lpv_Msg = (msg_rq_t*)lpv_Clientdata->read_buf;
 	msg_rq_t *p = (msg_rq_t*)lpv_Clientdata->write_buf;
 	long long llv_Receiverip = GetClientIp(&lpv_Msg->receiverid);
@@ -322,7 +322,7 @@ KNL_RESULT knl_get_friend_list(void* clientdata)
 		return KNL_INVALID;
 	}
 
-	struct client_data *lpv_Clientdata = (struct client_data*)clientdata;
+	struct job_queue_item *lpv_Clientdata = (struct job_queue_item*)clientdata;
 	//getfriendlist_rq_t *p = (getfriendlist_rq_t*)lpv_Clientdata->read_buf;
 
 	//long long llv_Senderid = p->senderid;
@@ -363,7 +363,7 @@ static void epoll_add_event(int epollfd,int fd)
 void* deal_data(void* clientdata)    /*key is equal to ip or socket*/
 {
 	//解析参数包
-	struct client_data *c_data = (struct client_data*)clientdata;
+	struct job_queue_item *c_data = (struct job_queue_item*)clientdata;
 
 	/*包协议与函数指针建立的协议包映射表*/
 	protocol_map protocol_entry[] = 

@@ -1,6 +1,6 @@
 #include "net.h"
 
-int udp_init()
+int init_udp()
 {
 	int sockfd;
 	/*构造sockaddr_in结构体*/

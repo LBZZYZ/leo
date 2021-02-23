@@ -5,7 +5,7 @@ static int SOCKET(int,int,int);
 static int BIND(int,const struct sockaddr*,socklen_t);
 static int LISTEN(int,int);
 
-int tcp_init()
+int init_tcp()
 {
 	int listenfd = -1;
 	struct sockaddr_in serveraddr,clientaddr;

@@ -39,7 +39,7 @@ static void epoll_mod_event(int epollfd,int fd)
 	}
 
 }
-void connect_client(pool_t *pool)
+void receive_client_connection(pool_t *pool)
 {
 	int listenfd,udpfd,connfd,epollfd,nfds;
 	/*epoll传出监听集合*/
@@ -50,10 +50,10 @@ void connect_client(pool_t *pool)
 	bzero(&clientaddr,sizeof(clientaddr));
 	socklen_t socklen = sizeof(clientaddr);
 
-	listenfd = tcp_init();
+	listenfd = init_tcp();
 	assert(listenfd > 0);
 
-	udpfd = udp_init();
+	udpfd = init_udp();
 	assert(udpfd > 0);
 
 	epollfd = epoll_create1(0);
@@ -62,8 +62,8 @@ void connect_client(pool_t *pool)
 	epoll_add_event(epollfd,listenfd);
 	epoll_add_event(epollfd,udpfd);
 
-	client_data *usrs = (client_data*)malloc(sizeof(client_data)*FDSIZE);
-	memset(usrs,0,sizeof(client_data)*FDSIZE);
+	job_queue_item *usrs = (job_queue_item*)malloc(sizeof(job_queue_item)*FDSIZE);
+	memset(usrs,0,sizeof(job_queue_item)*FDSIZE);
 
 	for(int i=0;i<FDSIZE;i++)
 	{
@@ -80,7 +80,7 @@ void connect_client(pool_t *pool)
 
 		for (int n = 0; n < nfds; ++n) 
 		{
-			/*TCP连接*/
+			//TCP连接
 			if (events[n].data.fd == listenfd)
 			{
 				connfd = accept(listenfd,(struct sockaddr *) &clientaddr, &socklen);
@@ -90,7 +90,7 @@ void connect_client(pool_t *pool)
 				usrs[connfd].src_addr = clientaddr;
 				usrs[connfd].src_addrlen = socklen;
 			}
-			/*UDP读*/
+			//UDP读
 			else if(events[n].data.fd == udpfd && events[n].events == EPOLLIN)
 			{
 				bzero(usrs[udpfd].read_buf,sizeof(usrs[udpfd].read_buf));
@@ -98,36 +98,25 @@ void connect_client(pool_t *pool)
 				usrs[udpfd].r_length = 0;
 				usrs[udpfd].w_length = 0;
 				
-				/*接收UDP数据*/
 				usrs[udpfd].r_length = recvfrom(udpfd,usrs[udpfd].read_buf,BUFSIZE,0,(struct sockaddr*)&usrs[udpfd].src_addr,&usrs[udpfd].src_addrlen);
 				assert(usrs[udpfd].r_length != -1);
-				
-				/*发送UDP服务器应答(只注册用、待改)*/
-				registe_rs_t *rq = (registe_rs_t*)usrs[udpfd].read_buf;
-				server_rs_t rs;
-				rs.packtype = PROTOCOL_SERVER_RS;
-				rs.num = rq->packnum;
-				send_udp_data(udpfd,(const char*)&rs,sizeof(rs),(struct sockaddr*)&usrs[udpfd].src_addr,sizeof(struct sockaddr_in));
 
 				/*向任务队列中添加任务*/
 				usrs[udpfd].fd = udpfd;
 				Thread_Add_Task(pool,deal_data,(void*)&usrs[udpfd]);
 
 			}
-			/*UDP写*/
+			//UDP写
 			else if(events[n].data.fd == udpfd && events[n].events == EPOLLOUT)
 			{
-				printf("UDP写\n");
 				if(!usrs[udpfd].write_buf)continue;
 				send_udp_data(udpfd,usrs[udpfd].write_buf,usrs[udpfd].w_length,(struct sockaddr*)&usrs[udpfd].dest_addr,usrs[udpfd].dest_addrlen);
 				
 				epoll_mod_event(epollfd,udpfd);
 			}
-			/*TCP读*/
+			//TCP读
 			else if(events[n].events & EPOLLIN)
 			{
-				printf("TCP读\n");
-
 				int *p_len = &usrs[connfd].r_length;
 				int connfd = events[n].data.fd;
 				usrs[connfd].fd = connfd;
@@ -144,27 +133,16 @@ void connect_client(pool_t *pool)
 					Thread_Add_Task(pool,deal_data,(void*)&usrs[connfd]);
 				}				
 			}
-
-			/*TCP写*/
+			//TCP写
 			else if(events[n].events & EPOLLOUT)
 			{
-				printf("TCP写\n");
-
 				int connfd = events[n].data.fd;
-				if(usrs[connfd].write_buf[0] == 0)
-				{
-					continue;
-				}
-
-				send_tcp_data(connfd,(const char*)(&(usrs[connfd].w_length)),4);
 				send_tcp_data(connfd,usrs[connfd].write_buf,usrs[connfd].w_length);
-		
 				epoll_mod_event(epollfd,connfd);
-				packtype_t packtype = *(usrs[connfd].write_buf);
 
 				bzero(usrs[connfd].write_buf,sizeof(usrs[connfd].write_buf));
 			}
-			/*未知事件*/
+			//未知事件
 			else
 			{
 				exit(EXIT_FAILURE);

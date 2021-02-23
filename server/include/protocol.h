@@ -84,7 +84,7 @@ typedef struct
 	packtype_t packtype;  
 }heart_t;
 
-typedef struct client_data //参数封装
+typedef struct job_queue_item //参数封装
 {
 	char 		       read_buf[BUFSIZE];
 	char 		       write_buf[BUFSIZE];
@@ -96,7 +96,7 @@ typedef struct client_data //参数封装
 	socklen_t 	       src_addrlen;
 	struct sockaddr_in dest_addr;
 	socklen_t 	       dest_addrlen;
-}client_data;
+}job_queue_item;
 
 
 /*注册请求包*/

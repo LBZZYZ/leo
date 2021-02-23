@@ -20,18 +20,16 @@
 #define	LISTENSIZE      128
 #define	IPSIZE	        16
 #define MAX_EVENTS      100
-#define FDSIZE 		65535
+#define FDSIZE 		    65535
 
-/*网络初始化*/
-int tcp_init();
-int udp_init();
-/*epoll等待tcp/udp读写*/
-void connect_client(pool_t *pool);
+
+int init_tcp();
+int init_udp();
+void receive_client_connection(pool_t *pool);
 /*发送网络数据*/
 void send_udp_data(int sockfd,const char *buf,int len,const struct sockaddr* dest_addr,socklen_t socklen);
 void send_tcp_data(int sockfd,const char *buf,int len);
 void tcp_destroy();
 void udp_destroy();
-
 
 #endif
