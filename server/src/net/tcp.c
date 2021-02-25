@@ -1,27 +1,36 @@
 #include "net.h"
 #include "err_sys.h"
+#include <assert.h>
 
 static int SOCKET(int,int,int);
 static int BIND(int,const struct sockaddr*,socklen_t);
 static int LISTEN(int,int);
 
-int init_tcp()
+int init_tcp_listener()
 {
-	int listenfd = -1;
-	struct sockaddr_in serveraddr,clientaddr;
-
-	bzero(&serveraddr,sizeof(serveraddr));
-	bzero(&clientaddr,sizeof(clientaddr));
+	struct sockaddr_in serveraddr;
+	int listenfd;
 
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port = htons(TCPSERVERPORT);
+	serveraddr.sin_port = htons(TCPLISTENPORT);
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	
 	listenfd = SOCKET(AF_INET, SOCK_STREAM, 0);
 	BIND(listenfd, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	LISTEN(listenfd, LISTENSIZE);
-
+	LISTEN(listenfd, BACKLOGSIZE);
 
 	return listenfd;
+}
+
+int start_tcp_listen(int listenfd)
+{
+	assert(listenfd != -1);
+
+	static struct sockaddr_in clientaddr;
+	bzero(&clientaddr,sizeof(clientaddr));
+	socklen_t socklen = sizeof(clientaddr);
+
+	return accept(listenfd, (struct sockaddr *)&clientaddr, &socklen);
 }
 
 int SOCKET(int domain, int type, int protocol)

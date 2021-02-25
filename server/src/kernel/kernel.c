@@ -133,7 +133,7 @@ KNL_RESULT knl_registe(void *clientdata)
 	c_data->dest_addr.sin_family = c_data->src_addr.sin_family;
 	c_data->dest_addr.sin_port = c_data->src_addr.sin_port;
 	c_data->dest_addr.sin_addr.s_addr = c_data->src_addr.sin_addr.s_addr;
-	epoll_add_event(c_data->epollfd,c_data->fd);
+	add_epoll_event(c_data->epollfd,c_data->fd);
 
 	return KNL_OK;
 }
@@ -163,7 +163,7 @@ KNL_RESULT knl_login(void *clientdata)
 		return KNL_ERROR;
 	}
 
-	epoll_add_event(c_data->epollfd,c_data->fd);
+	add_epoll_event(c_data->epollfd,c_data->fd);
 
 	return KNL_OK;
 }
@@ -200,7 +200,7 @@ KNL_RESULT knl_search_user(void *clientdata)
 		strncpy(s_rs->s_birth,str,strlen(str));
 		str = lst_pop(lst);
 		s_rs->s_sex = *str;
-		epoll_add_event(c_data->epollfd,c_data->fd);
+		add_epoll_event(c_data->epollfd,c_data->fd);
 		return KNL_OK;
 	}
 
@@ -244,7 +244,7 @@ KNL_RESULT knl_add_user(void *clientdata)
 	lpv_Clientdata->dest_addr.sin_family = AF_INET;
 	lpv_Clientdata->dest_addr.sin_addr.s_addr = llv_Ip;
 	lpv_Clientdata->dest_addr.sin_port = htons(4567);
-	epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
+	add_epoll_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
 
 	return KNL_OK;
 }
@@ -276,7 +276,7 @@ KNL_RESULT knl_add_user_rs(void *clientdata)
 		inet_ntop(AF_INET,&lpv_Clientdata->dest_addr.sin_addr.s_addr,ip,sizeof(ip));
 
 		lpv_Clientdata->dest_addr.sin_port = htons(4567);
-		epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
+		add_epoll_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
 
 	}
 	else
@@ -310,7 +310,7 @@ int knl_send_msg(void* clientdata)
 	lpv_Clientdata->dest_addr.sin_family = AF_INET;
 	lpv_Clientdata->dest_addr.sin_addr.s_addr = llv_Receiverip;
 	lpv_Clientdata->dest_addr.sin_port = htons(4567);
-	epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
+	add_epoll_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
 
 	return 0;
 }
@@ -342,14 +342,14 @@ KNL_RESULT knl_get_friend_list(void* clientdata)
 		lpv_Clientdata->w_length = 8+ 1*sizeof(friendlistmsg_t);
 	}
 
-	epoll_add_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
+	add_epoll_event(lpv_Clientdata->epollfd,lpv_Clientdata->fd);
 
 	return KNL_ERROR;
 }
 
 
 /*添加epoll监听事件*/
-static void epoll_add_event(int epollfd,int fd)
+static void add_epoll_event(int epollfd,int fd)
 {
 	struct epoll_event event;
 	event.events = EPOLLIN | EPOLLOUT;

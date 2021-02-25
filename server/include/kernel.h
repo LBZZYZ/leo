@@ -10,7 +10,7 @@
 typedef int KNL_RESULT;
 typedef int (*ptrfun_t) (void *);    /*任务函数指针*/
 
-static void epoll_add_event(int epollfd,int fd);
+static void add_epoll_event(int epollfd,int fd);
 void*      deal_data(void*);
 KNL_RESULT knl_registe(void*);
 KNL_RESULT knl_login(void*);
