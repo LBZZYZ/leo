@@ -14,8 +14,8 @@
 #define	TCPSERVERIP  	"172.30.225.204"
 #define UDPSERVERIP     "172.30.225.204"
 #define	TCPLISTENPORT	9817
-#define	TCPCLIENTPORT	8000
-#define	BACKLOGSIZE      128
+#define	UDPCLIENTPORT	9999
+#define	BACKLOGSIZE     128
 #define	IPSIZE	        16
 #define MAX_EVENTS      100
 #define FDSIZE 		    65535

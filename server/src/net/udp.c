@@ -7,7 +7,7 @@ int init_udp()
 	struct sockaddr_in serveraddr;
 	bzero(&serveraddr,sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port = htons(UDPSERVERPORT);
+	serveraddr.sin_port = htons(UDPCLIENTPORT);
 	inet_pton(AF_INET,UDPSERVERIP,&serveraddr.sin_addr.s_addr);
 	//serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	//char buf[20];
