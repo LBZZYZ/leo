@@ -206,7 +206,7 @@ PROTOBUF_EXPORT size_t StringSpaceUsedExcludingSelfLong(const std::string& str);
 // the internal library are allowed to create subclasses.
 class PROTOBUF_EXPORT MessageLite {
  public:
-  constexpr MessageLite() = default;
+  MessageLite() = default;
   virtual ~MessageLite() = default;
 
   // Basic Operations ------------------------------------------------

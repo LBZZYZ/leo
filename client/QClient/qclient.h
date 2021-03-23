@@ -5,7 +5,7 @@
 #include "QPersonList.h"
 #include <QWidget>
 #include "ui_qclient.h"
-#include "QAddFrd.h"
+#include "AddFriendWindow.h"
 #include "qlistwidget.h"
 #include <map>
 #include "qnchatmessage.h"
@@ -29,7 +29,7 @@ public:
 	~QClient();
 
 public:
-	QAddFrd* addui;
+	AddFriendWindow* addui;
 	QPersonList* m_pFriendList;									//好友列表指针
 
 protected:
@@ -65,8 +65,8 @@ protected:
 
 public slots:
 	void InitAddFriendUi();
-	void adduiclosed();
-	void DealAddMsgToMsgListSignal(long long, const char*, int);
+	void closed();
+	void DealAddMsgToMsgList(long long, const char*, int);
 	void DealUserAddRQSLot(char* pszBuffer, int nLen);
 	void SendAddFrdRsSlot();
 	void DealUserAddRsSLot(char* pszBuffer, int nLen);

@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="down-arrow">
+    <file>212121/arrow-down-filling.png</file>
+    <file>212121/arrow-left-filling.png</file>
+    <file>212121/arrow-right-filling.png</file>
+    <file>212121/arrow-up-filling.png</file>
+  </qresource>
+  <qresource prefix="down-arrow-on">
+    <file>673AB7/arrow-down-filling.png</file>
+    <file>673AB7/arrow-left-filling.png</file>
+    <file>673AB7/arrow-right-filling.png</file>
+    <file>673AB7/arrow-up-filling.png</file>
+  </qresource>
+  <qresource prefix="down-arrow-hover">
+    <file>512DA8/arrow-down-filling (1).png</file>
+    <file>512DA8/arrow-left-filling (1).png</file>
+    <file>512DA8/arrow-right-filling (1).png</file>
+    <file>512DA8/arrow-up-filling (1).png</file>
+  </qresource>
+</RCC>

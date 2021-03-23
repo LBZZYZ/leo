@@ -59,13 +59,13 @@
     <ClCompile Include="GeneratedFiles\Release\moc_QPersonList.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="AddFirend\QAddFrd.cpp">
+    <ClCompile Include="AddFirend\AddFriendWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QAddFrd.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_AddFriendWindow.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QAddFrd.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_AddFriendWindow.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_qnchatmessage.cpp">
@@ -198,6 +198,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="protobuf\leo.pb.cc" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_FriendNoteDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="AddFirend\FriendNoteDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qqlogin.ui">
@@ -215,10 +221,10 @@
     <CustomBuild Include="QClient\QPersonList.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="AddFirend\QAddFrd.h">
+    <CustomBuild Include="AddFirend\AddFriendWindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="AddFirend\QAddFrd.ui">
+    <CustomBuild Include="AddFirend\AddFriendWindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="chat\qnchatmessage.h">
@@ -263,6 +269,12 @@
     <CustomBuild Include="QClient\QFrdListItem.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="AddFirend\FriendNoteDialog.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AddFirend\FriendNoteDialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_qqlogin.h">
@@ -271,7 +283,7 @@
     <ClInclude Include="GeneratedFiles\ui_qclient.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_QAddFrd.h">
+    <ClInclude Include="GeneratedFiles\ui_AddFriendWindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="Net\TCPNet.h">
@@ -288,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="protobuf\leo.pb.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_FriendNoteDialog.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

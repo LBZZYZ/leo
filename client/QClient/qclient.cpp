@@ -38,7 +38,7 @@ CLIENT_RESULT QClient::ConnectSignalSlot(void)
 	connect(ui.m_btnMin, &QPushButton::pressed, this, &QClient::showMinimized);
 	connect(ui.m_btnMax, &QPushButton::pressed, this, &QClient::showMaximized);
 	connect(ui.m_btnClose, &QPushButton::pressed, this, &QClient::close);
-	//connect(addui, SIGNAL(adduiclose()), this, SLOT(adduiclosed()));
+	//connect(addui, SIGNAL(close()), this, SLOT(closed()));
 
 	return CLIENT_OK;
 }
@@ -137,13 +137,13 @@ void QClient::InitAddFriendUi()//初始化添加好友窗口
 {
 	if (addui == nullptr)
 	{
-		addui = new QAddFrd();
+		addui = new AddFriendWindow();
 		addui->show();
 		emit IsAdduiExist(true);//发送添加好友窗口存在的信号
 	}
 }
 
-void QClient::adduiclosed()
+void QClient::closed()
 {
 	emit IsAdduiExist(false);
 
@@ -152,7 +152,7 @@ void QClient::adduiclosed()
 }
 
 /*把等待验证的信息放到消息列表中A*/
-void QClient::DealAddMsgToMsgListSignal(long long ID, const char* namestr, int type)
+void QClient::DealAddMsgToMsgList(long long ID, const char* namestr, int type)
 {
 
 	m_UsrIdToQListWidgetItem[ID] = new QListWidgetItem();

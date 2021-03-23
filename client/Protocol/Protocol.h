@@ -2,6 +2,7 @@
 #include <list>
 #include<QString>
 #include <QPixmap>
+#include <stdint.h>
 
 using namespace std;
 #define IP				"47.110.70.68"
@@ -143,12 +144,25 @@ struct STRU_LOGIN_RS				//	TCP
 	ResultType result;				//  回复
 };
 //--------------------搜索添加删除好友---------------
-struct STRU_SEARCH_USER_RQ			//	TCP
+
+typedef enum
 {
-	PackType packtype;				//  协议
-	long long llUserID;				//  用户ID 
-	long long llSearchID;			//	搜索ID
-};
+	id, phone, name
+}HowToFindFriends;
+
+typedef union 
+{
+	uint64_t id;
+	uint64_t phone;
+	string name;
+}SearchFriendsStorage;
+
+typedef struct 
+{
+	PackType packtype;
+	HowToFindFriends how_to_find_friends;
+	SearchFriendsStorage search_friends_storage;
+}STRU_SEARCH_USER_RQ;
 
 struct STRU_SEARCH_USER_RS			//	TCP
 {

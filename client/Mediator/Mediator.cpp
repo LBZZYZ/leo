@@ -195,7 +195,7 @@ void Mediator::IsAdduiExisted(bool result)
 	{
 		connect(v->addui, SIGNAL(sendsearchsignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
 		connect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addui, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)), Qt::BlockingQueuedConnection);
-		bool ret = connect(v->addui, SIGNAL(SendAddFrdRqSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));	/*发送添加好友请求*/
+		bool ret = connect(v->addui, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));	/*发送添加好友请求*/
 		if (ret == false)
 		{
 			QDialog dlg(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -205,7 +205,7 @@ void Mediator::IsAdduiExisted(bool result)
 
 
 
-		connect(v->addui, SIGNAL(AddMsgToMsgListSignal(long long, const char*, int)), v, SLOT(DealAddMsgToMsgListSignal(long long, const char*, int)));
+		connect(v->addui, SIGNAL(AddMsgToMsgList(long long, const char*, int)), v, SLOT(DealAddMsgToMsgList(long long, const char*, int)));
 
 
 
@@ -215,7 +215,7 @@ void Mediator::IsAdduiExisted(bool result)
 		disconnect(v->addui, SIGNAL(sendsearchsignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
 		disconnect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addui, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)));
 		//disconnect(v->addui, SIGNAL(SendAddFrdRsSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
-		//disconnect(v->addui, SIGNAL(SendAddFrdRqSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));			/*发送添加好友请求*/
+		//disconnect(v->addui, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));			/*发送添加好友请求*/
 		//disconnect(m_pUdpAgency, SIGNAL(DealAddFrdRqSignal(const char*, int)), this, SLOT(DealUserAddRQSLot(const char*, int)));		/*处理添加好友请求*/
 		//disconnect(m_pUdpAgency, SIGNAL(DealAddFrdRsSignal(bool)), v->m_pFriendList, SLOT(DealUserAddRSSLot(bool)));					/*处理添加好友回复*/
 

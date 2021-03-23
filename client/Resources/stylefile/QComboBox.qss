@@ -1,0 +1,80 @@
+QWidget
+{
+	background-color: rgb(255, 255, 255);
+}
+
+QComboBox
+{
+	border: 1px solid #BDBDBD; 
+	border-radius: 2px;
+	padding: 2px;
+	background: #FFFFFF; 
+	
+	font-family: '微软雅黑';
+	font-size: 16px;
+	color: #212121;	/*文本颜色，ComboBox上显示的，不是item里的*/
+	
+	
+	width: 56px;
+	height: 24px;
+}
+
+QComboBox::hover
+{
+	border: 1px solid #512DA8;	
+}
+
+
+QComboBox::on
+{
+	border: 1px solid #673AB7;
+}
+
+QComboBox::drop-down 
+{
+	border: none;
+}
+
+QComboBox::down-arrow 
+{
+	border: none;
+	image: url(:/down-arrow/212121/arrow-down-filling.png);
+}
+
+
+QComboBox::down-arrow::hover
+{
+	border: none;
+	image: url(:/down-arrow-hover/512DA8/arrow-down-filling (1).png)
+}
+
+QComboBox::down-arrow::on
+{
+	border: none;
+	
+	image: url(:/down-arrow-on/673AB7/arrow-up-filling.png);
+}
+
+QComboBox QAbstractItemView
+{
+	color: #212121;
+	
+	background-color: #FFFFFF;
+	outline: 0px;
+}
+
+QComboBox QAbstractItemView::item
+{
+	height: 24px;
+}
+QComboBox QAbstractItemView::item:hover
+{
+	color: #FFFFFF;
+	background-color: #673AB7;
+
+}
+QComboBox QAbstractItemView::item:selected
+{
+	color: #FFFFFF;
+	background-color: #673AB7;
+}
