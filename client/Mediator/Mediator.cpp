@@ -1,18 +1,8 @@
 ﻿#include "Mediator.h"
-#include "Protocol\Protocol.h"
-#include  "qdebug.h"
-#include <QMessagebOX>
-#include "Net\UDPNet.h"
-#include "Agency\AgencyUDP.h"
-#include "UDPVerify\UDPVerify.h"
-#include  "Agency\AgencyTCP.h"
-
-#include <QDir>
-
 
 Mediator::Mediator(QWidget *parent)
 {
-	//InitQClient(NULL);
+	//UiInitMainWindow(NULL);
 	
 	InitAllNet();
 	InitQLogin();
@@ -32,9 +22,9 @@ Mediator::Mediator(QWidget *parent)
 
 Mediator::~Mediator()
 {
-	if(!m_pUdpAgency)m_pUdpAgency->~CAgency();
+	if(!m_pUdpAgency)m_pUdpAgency->~Agency();
 
-	if(!m_pTcpAgency)m_pTcpAgency->~CAgency();
+	if(!m_pTcpAgency)m_pTcpAgency->~Agency();
 
 }
 
@@ -42,47 +32,37 @@ void Mediator::InitAllNet()
 {
 	//UDP
 	m_pUdpAgency = new CUDPAgency();
-	m_pUdpAgency->InitAgency();
+	m_pUdpAgency->Init();
 	CUDPAgency::m_UDPverify->InitVerify();
 
 	//TCP
 	m_pTcpAgency = new CTCPAgency();
-	m_pTcpAgency->InitAgency();
+	m_pTcpAgency->Init();
 
 
 	//UDP线程
-	m_udpthread = new UdpThread(m_pUdpAgency->m_pNet, this);
+	m_udpthread = new UdpThread(m_pUdpAgency->net, this);
 	//TCp线程
-	m_tcpthread = new TcpThread(m_pTcpAgency->m_pNet, this);
+	m_tcpthread = new TcpThread(m_pTcpAgency->net, this);
 }
 
 void Mediator::InitQLogin()
 {
-	w = new QQLogin();
+	w = new Login();
 	w->show();
 
 
 	//请求
 	connect(w, SIGNAL(SendUdpRQ(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
-	connect(w, SIGNAL(SendTcpRQ(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
 	connect(m_pUdpAgency, SIGNAL(RegisetrSignal(bool)), this, SLOT(DealRegisterRS(bool)), Qt::BlockingQueuedConnection);
 	connect(m_pTcpAgency, SIGNAL(LoginRSSignal(bool)), this, SLOT(DealLoginRS(bool)), Qt::BlockingQueuedConnection);
 }
 
-void Mediator::InitQClient(list<FRINENDLISTMSG> * pFriendlistmsg)
+void Mediator::UiInitMainWindow(list<FRINENDLISTMSG> * pFriendlistmsg)
 {
-	
-	v = new QClient(pFriendlistmsg,this);
-	v->show();
-
-	//---------------------------------------------连接信号与槽函数-----------------------------------------------------------------------
-	//connect(v, SIGNAL(IsAdduiExist(bool)), this, SLOT(IsAdduiExisted(bool)));
-	//connect(v, SIGNAL(deletefriendsignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
-	//connect(m_pTcpAgency, SIGNAL(DeletefrRSsignal(bool)), v->m_pFriendList, SLOT(DealDeletefrslot(bool)), Qt::BlockingQueuedConnection);
-	connect(v->m_pFriendList, SIGNAL(openchatwidget(QString)), this, SLOT(initchatwidget(QString)));
-	//connect(v, SIGNAL(SendAddFrdRsSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
-
-
+	mainwindow = MainWindow::GetInstance();
+	mainwindow->show();
+	connect(mainwindow->m_pFriendList, SIGNAL(openchatwidget(QString)), this, SLOT(initchatwidget(QString)));
 }
 
 
@@ -106,11 +86,7 @@ void Mediator::LoginFail()
 	}
 }
 
-void Mediator::DealTcpRQ(const char*rq, int nSendLen)//处理Tcp的请求
-{
-	qDebug() << userId;
-	m_pTcpAgency->GetNet()->SendTCPData((const char*)rq, nSendLen);
-}
+
 
 void Mediator::DealUdpRQ(const char* rq, int pack, int nSendLen)//处理udp请求
 {
@@ -126,7 +102,7 @@ void Mediator::DealRegisterRS(bool result)//处理注册回复
 		int ret = message.exec();
 		if (ret == QMessageBox::RejectRole || QMessageBox::AcceptRole)
 		{
-			//w->turnPage2();
+			//w->TurnToLoginWindow();
 			return;
 		}
 	}
@@ -193,9 +169,9 @@ void Mediator::IsAdduiExisted(bool result)
 {
 	if (result)
 	{
-		connect(v->addui, SIGNAL(sendsearchsignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
-		connect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addui, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)), Qt::BlockingQueuedConnection);
-		bool ret = connect(v->addui, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));	/*发送添加好友请求*/
+		connect(v->addfriends_window, SIGNAL(SearchFriendsRequestSignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
+		connect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addfriends_window, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)), Qt::BlockingQueuedConnection);
+		bool ret = connect(v->addfriends_window, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));	/*发送添加好友请求*/
 		if (ret == false)
 		{
 			QDialog dlg(nullptr, Qt::Dialog | Qt::WindowCloseButtonHint);
@@ -205,17 +181,17 @@ void Mediator::IsAdduiExisted(bool result)
 
 
 
-		connect(v->addui, SIGNAL(AddMsgToMsgList(long long, const char*, int)), v, SLOT(DealAddMsgToMsgList(long long, const char*, int)));
+		connect(v->addfriends_window, SIGNAL(AddMsgToMsgList(long long, const char*, int)), v, SLOT(DealAddMsgToMsgList(long long, const char*, int)));
 
 
 
 	}
 	else
 	{
-		disconnect(v->addui, SIGNAL(sendsearchsignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
-		disconnect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addui, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)));
-		//disconnect(v->addui, SIGNAL(SendAddFrdRsSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
-		//disconnect(v->addui, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));			/*发送添加好友请求*/
+		disconnect(v->addfriends_window, SIGNAL(SearchFriendsRequestSignal(const char*, int)), this, SLOT(DealTcpRQ(const char*, int)));
+		disconnect(m_pTcpAgency, SIGNAL(SerchRsSiganl(STRU_SEARCH_USER_RS*)), v->addfriends_window, SLOT(DealserchRS(STRU_SEARCH_USER_RS*)));
+		//disconnect(v->addfriends_window, SIGNAL(SendAddFrdRsSignal(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));
+		//disconnect(v->addfriends_window, SIGNAL(SendAddFriendRequest(const char*, int, int)), this, SLOT(DealUdpRQ(const char*, int, int)));			/*发送添加好友请求*/
 		//disconnect(m_pUdpAgency, SIGNAL(DealAddFrdRqSignal(const char*, int)), this, SLOT(DealUserAddRQSLot(const char*, int)));		/*处理添加好友请求*/
 		//disconnect(m_pUdpAgency, SIGNAL(DealAddFrdRsSignal(bool)), v->m_pFriendList, SLOT(DealUserAddRSSLot(bool)));					/*处理添加好友回复*/
 
@@ -263,7 +239,7 @@ void Mediator::DealFriendList(char * pszBuffer, int nLen)
 	if (pszBuffer == NULL || nLen <= 0)
 		return;
 	STRU_GET_FRIENDLIST_RS *lpv_Getfriendlistrs = (STRU_GET_FRIENDLIST_RS*)pszBuffer;
-	InitQClient(lpv_Getfriendlistrs->pFriendList);
+	UiInitMainWindow(lpv_Getfriendlistrs->pFriendList);
 }
 
 
@@ -286,7 +262,7 @@ void Mediator::GetFriendList(void)
 	STRU_GET_FRIENDLIST_RQ lsv_Getfrinedlistrq;
 	lsv_Getfrinedlistrq.packtype = PROTOCOL_GET_FRIENDLIST_RQ;
 	lsv_Getfrinedlistrq.llUserID = userId;
-	if (false == m_pTcpAgency->GetNet()->SendTCPData((char*)&lsv_Getfrinedlistrq, sizeof(STRU_GET_FRIENDLIST_RQ)))
+	if (false == m_pTcpAgency->DealData((char*)&lsv_Getfrinedlistrq, sizeof(STRU_GET_FRIENDLIST_RQ)))
 		return;
 
 }

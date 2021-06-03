@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AddFriendWindow</class>
+ <widget class="QWidget" name="AddFriendWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>771</width>
+    <height>548</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>添加好友</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Image.qrc">
+    <normaloff>:/window-icon/WindowIcon.png</normaloff>:/window-icon/WindowIcon.png</iconset>
+  </property>
+  <property name="whatsThis">
+   <string/>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget
+{
+	background-color: rgb(255, 255, 255);
+}
+QComboBox
+{
+	border: 1px solid #BDBDBD; 
+	border-radius: 2px;
+	padding: 2px;
+	background: #FFFFFF; 
+	
+	font-family: '微软雅黑';
+	font-size: 16px;
+	color: #212121;	/*文本颜色，ComboBox上显示的，不是item里的*/
+	
+	
+	width: 56px;
+	height: 24px;
+}
+
+QComboBox::hover
+{
+	border: 1px solid #512DA8;	
+}
+
+
+QComboBox::on
+{
+	border: 1px solid #673AB7;
+}
+
+QComboBox::drop-down 
+{
+	border: none;
+}
+
+QComboBox::down-arrow 
+{
+	border: none;
+	image: url(:/down-arrow/212121/arrow-down-filling.png);
+}
+
+
+QComboBox::down-arrow::hover
+{
+	border: none;
+	image: url(:/down-arrow-hover/512DA8/arrow-down-filling (1).png)
+}
+
+QComboBox::down-arrow::on
+{
+	border: none;
+	
+	image: url(:/down-arrow-on/673AB7/arrow-up-filling.png);
+}
+
+QComboBox QAbstractItemView
+{
+	color: #212121;
+	
+	background-color: #FFFFFF;
+	outline: 0px;
+}
+
+QComboBox QAbstractItemView::item
+{
+	height: 24px;
+}
+QComboBox QAbstractItemView::item:hover
+{
+	color: #FFFFFF;
+	background-color: #673AB7;
+
+}
+QComboBox QAbstractItemView::item:selected
+{
+	color: #FFFFFF;
+	background-color: #673AB7;
+}
+
+QPushButton
+{
+	background-color: #673AB7;
+	color: #FFFFFF;
+
+	height: 36px;
+	width: 88px;
+
+	border-radius: 2px;
+}
+
+QPushButton::hover
+{
+	background-color: #512DA8;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,7">
+     <property name="spacing">
+      <number>16</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="13,1,1,1">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLineEdit" name="SearchInfoEditor">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLineEdit
+{
+
+	padding-left: 8px;
+
+	border: 1px solid #BDBDBD;
+	border-radius:2px;
+
+	height: 36px;
+
+	color: #212121;
+
+}
+
+QLineEdit::hover
+{
+	border: 1px solid #673AB7;
+}
+</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="maxLength">
+            <number>12</number>
+           </property>
+           <property name="frame">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>账号/昵称/手机号</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="SearchFriendsButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="cursor">
+            <cursorShape>ArrowCursor</cursorShape>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>查找好友</string>
+           </property>
+           <property name="autoRepeatDelay">
+            <number>300</number>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,1,14">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QComboBox" name="SexComboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <pointsize>-1</pointsize>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <property name="currentText">
+            <string>性别</string>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+           </property>
+           <property name="placeholderText">
+            <string/>
+           </property>
+           <item>
+            <property name="text">
+             <string>性别</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>男</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>女</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QComboBox" name="AgeComboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <property name="currentText">
+            <string>年龄</string>
+           </property>
+           <property name="placeholderText">
+            <string/>
+           </property>
+           <item>
+            <property name="text">
+             <string>年龄</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>18以下</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>18-22</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>22-30</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>30以上</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>13</width>
+             <height>27</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="listWidget">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QListWidget
+{
+	border: 1px solid #BDBDBD;
+}
+
+QListWidget::item
+{
+	height: 40px;
+}</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="autoScrollMargin">
+        <number>0</number>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Adjust</enum>
+       </property>
+       <property name="layoutMode">
+        <enum>QListView::Batched</enum>
+       </property>
+       <property name="batchSize">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>SexComboBox</tabstop>
+  <tabstop>SearchInfoEditor</tabstop>
+  <tabstop>AgeComboBox</tabstop>
+  <tabstop>listWidget</tabstop>
+  <tabstop>SearchFriendsButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="Image.qrc"/>
+ </resources>
+ <connections/>
+</ui>

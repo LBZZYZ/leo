@@ -331,7 +331,7 @@
     <property name="currentIndex">
      <number>0</number>
     </property>
-    <widget class="QWidget" name="page">
+    <widget class="QWidget" name="LoginPage">
      <property name="palette">
       <palette>
        <active>
@@ -440,7 +440,7 @@ QComboBox::down-arrow:on
        <bool>false</bool>
       </property>
       <property name="currentText">
-       <string>280761575</string>
+       <string/>
       </property>
       <property name="maxCount">
        <number>10</number>
@@ -451,11 +451,6 @@ QComboBox::down-arrow:on
         <height>20</height>
        </size>
       </property>
-      <item>
-       <property name="text">
-        <string>280761575</string>
-       </property>
-      </item>
      </widget>
      <widget class="QLineEdit" name="m_passwordlineedit">
       <property name="geometry">
@@ -497,7 +492,7 @@ QLineEdit:hover {
 </string>
       </property>
       <property name="text">
-       <string>libingzhi5241.</string>
+       <string/>
       </property>
       <property name="maxLength">
        <number>22</number>
@@ -793,7 +788,7 @@ QPushButton:hover{
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="qLabel_HeadIcon">
+     <widget class="QLabel" name="AvatarLabel">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -853,8 +848,21 @@ border-radius: 24px;
        <string/>
       </property>
      </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>40</y>
+        <width>70</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="page_3">
+    <widget class="QWidget" name="RegisterPage">
      <property name="palette">
       <palette>
        <active>
@@ -1359,32 +1367,6 @@ background-color:#FFFFFF;</string>
       </property>
       <property name="text">
        <string>取消</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="m_closebutton">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>0</y>
-        <width>32</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton{background-color:rgb(0,0,0,0)}
-QPushButton:hover{border:none;background-color:rgb(200, 83, 48);}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>32</width>
-        <height>32</height>
-       </size>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
       </property>
      </widget>
      <widget class="QLabel" name="label_13">
@@ -2827,7 +2809,6 @@ QPushButton:hover{border:none;background-color:rgb(200, 83, 48);}</string>
      <zorder>qLabel_UserName</zorder>
      <zorder>m_pRegister</zorder>
      <zorder>m_pRegisterCancel</zorder>
-     <zorder>m_closebutton</zorder>
      <zorder>label_13</zorder>
      <zorder>label_17</zorder>
      <zorder>label_19</zorder>
@@ -2922,13 +2903,12 @@ QPushButton:hover{border:none;background-color:rgb(200, 83, 48);}</string>
   <tabstop>LoginButton</tabstop>
   <tabstop>m_pRegister</tabstop>
   <tabstop>m_pRegisterCancel</tabstop>
-  <tabstop>m_closebutton</tabstop>
   <tabstop>qLineEdit_UserName</tabstop>
   <tabstop>qLineEdit_PassWord</tabstop>
   <tabstop>qLineEdit_PhoneNumber</tabstop>
  </tabstops>
  <resources>
-  <include location="qqlogin.qrc"/>
+  <include location="login.qrc"/>
  </resources>
  <connections/>
 </ui>

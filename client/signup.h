@@ -2,13 +2,13 @@
 #define _SIGNUP_H
 
 #include <QtWidgets/QWidget>
-#include "ui_qqlogin.h"
+#include "ui_login.h"
 #include <qmovie.h>
 #include <Qsystemtrayicon>
 #include "qevent.h"
-#include <Protocol\Protocol.h>
-#pragma warning (disable:4786)
-extern long long userId;
+#include "../net/Protocol/Protocol.h"
+
+//extern long long userId;
 class Signup : public QWidget
 {
 	Q_OBJECT
@@ -19,11 +19,11 @@ public:
 	//void InitWindow();
 
 public slots:
-	//void turnPage2();
+	//void TurnToLoginWindow();
 	void MatchPassword();
 	void MatchAccount();
 	void Register();
-	//void MyClose();
+	//void CloseWindow();
 	void MathPhoneNumber();
 
 signals:
@@ -36,6 +36,6 @@ public:
 	int timeId;
 	int timeId2;
 	int sec;
-	Ui::QQLoginClass ui;
+	Ui::Login ui;
 };
 #endif // !_SIGNUP_H

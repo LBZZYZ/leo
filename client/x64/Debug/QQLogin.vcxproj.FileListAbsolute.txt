@@ -1,2 +1,0 @@
-E:\leo\client\x64\Debug\QQLogin.exe
-E:\leo\client\x64\Debug\QQLogin.pdb

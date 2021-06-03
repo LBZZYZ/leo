@@ -3,11 +3,11 @@
 
 
 #include <QObject>
-#include "qqlogin.h"
+#include "login.h"
 #include "Agency\Agency.h"
 #include "NetThread\UdpThread.h"
 #include "NetThread\TcpThread.h"
-#include "QClient\qclient.h"
+#include "qclient.h"
 #include "signup.h"
 class Mediator:public QObject
 {
@@ -17,13 +17,13 @@ public:
 	Mediator(QWidget *parent=0);
 	~Mediator();
 public:
-	QQLogin* w;
-	QClient* v;
-	CAgency* m_pUdpAgency;//Udp网络中介
-	CAgency* m_pTcpAgency;//
+	Login* w;
+	MainWindow* mainwindow;
+	Agency* m_pUdpAgency;//Udp网络中介
+	Agency* m_pTcpAgency;//
 	UdpThread* m_udpthread;
 	TcpThread* m_tcpthread;
-	void InitQClient(list<FRINENDLISTMSG> *);
+	void UiInitMainWindow(list<FRINENDLISTMSG> *);
 public slots:
     
 	void DealUdpRQ(const char*,int,int);		//处理Udp的请求
