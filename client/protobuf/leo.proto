@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package UserData;
+message Owner {
+	string name = 1;
+	string password = 2;
+	string phone = 3;
+	bool sex = 4;
+	string birth = 5;
+	string signature = 6;
+	bytes avatar = 7;
+}
