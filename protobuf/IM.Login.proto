@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package IM.Login;
+import "IM.Base.proto";
+
+
+message UserLoginRq
+{
+	string id = 1;
+	string password = 2;
+	IM.Base.UserStatus user_status = 3;
+	IM.Base.ClientType client_type = 4;
+}
