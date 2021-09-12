@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Agency.h"
-#include "Protocol/Protocol.h"
+
 
 
 class CTCPAgency;

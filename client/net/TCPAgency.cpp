@@ -1,6 +1,6 @@
 ﻿#include "TCPAgency.h"
 #include "TCPNet.h"
-#include "TCPThread.h"
+
 
 CTCPAgency::CTCPAgency()
 {
@@ -86,22 +86,6 @@ bool CTCPAgency::DeleteRS(const char *pszBuffer, const int nLen)
 	return true;
 }
 
-
-
-
-/*********************************************
-函数名       : GetFriendListRS
-函数功能描述 : 接收服务器发回的好友列表回复包，通过发送信号的方式交给Mediator类中的槽函数处理
-函数参数     : char *pszBuffer int nLen
-函数返回值   : bool 成功返回true 失败返回false
-函数作者     : 李柄志
-函数创建日期 : 2019.07.23
-函数修改日期 : *
-修改人       : *
-修改原因     : *
-版本         : 1.0
-历史版本     : 无
-*********************************************/
 bool CTCPAgency::GetFriendListRS(const char *pszBuffer, const int nLen)
 {
 	if (pszBuffer == NULL || nLen <= 0)

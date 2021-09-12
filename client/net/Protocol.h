@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _PROTOCOL_H_
+#define _PROTOCOL_H_
+
 #include <list>
 #include<QString>
 #include <QPixmap>
@@ -236,3 +238,5 @@ static int packId = 0;
 extern long long userId;
 static  QString userName;
 //===============================协议包==============================================
+
+#endif //_PROTOCOL_H_

@@ -1,23 +1,25 @@
-﻿#pragma once
+﻿#ifndef _INET_H_
+#define _INET_H_
+
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
-#include <QObject>
 
-#include "Agency.h"
-#include "Thread.h"
-
-class INet: public QObject
+class INet
 {
-	Q_OBJECT
 
 public:
 	INet() {}
 	virtual ~INet() {}
-public:
+
+	virtual void Connect(const char *Ip, const int Port) = 0;
+	virtual void DisConnect(const char *Ip, const int Port) = 0;
+	virtual bool SendData(const char *pszBuffer, const int nSendLen) { return false; }
+	virtual bool RecvData(char *pszBuffer, const int nSendLen) { return true; }
+
+protected:
 	virtual bool Init() = 0;
 	virtual void DeInit() = 0;
-	virtual bool SendData(const char* pszBuffer, const int nSendLen){ return false; }
 
-protected:        
-	NetThread* thread_of_receiving_data                                                                 ;
 };
+
+#endif //_INET_H_

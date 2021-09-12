@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "INet.h"
-#include "Thread.h"
 
-#include <QObject>
+
 
 class Agency;
 typedef bool (Agency::* CallBack_DealData)(char*, int);
@@ -23,7 +22,7 @@ public:
 public:
 	virtual bool Init() = 0;
 	virtual void DeInit() = 0;
-	virtual bool DealData(char* pszBuffer, int nLen) = 0;
+	static bool DealData(char* pszBuffer, int nLen){}
 
 protected:
 	INet* net;
