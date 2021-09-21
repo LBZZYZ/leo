@@ -27,7 +27,7 @@ public:
 	~Login();
 	void InitWindow();
 	void RegisterWatchedObject();
-	void LoadLocalSavedUser();
+	void LoadConfigFile();
 	void ConnectSignalSlot(void);
 
 	void mouseMoveEvent(QMouseEvent* event);
@@ -36,6 +36,7 @@ public:
 	
 	
 private:
+	static const char *ini_path;
 	QPoint current_cursor_pos;
 	QLineEdit* Num;
 	QString passWord;

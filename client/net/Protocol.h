@@ -2,9 +2,9 @@
 #define _PROTOCOL_H_
 
 #include <list>
-#include<QString>
-#include <QPixmap>
 #include <stdint.h>
+#include <QPixmap>
+#include <QString>
 
 using namespace std;
 #define IP				"39.108.143.167"

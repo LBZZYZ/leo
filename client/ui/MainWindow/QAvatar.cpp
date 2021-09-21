@@ -23,7 +23,6 @@ QAvatar::QAvatar(QPixmap *avatar, QSize size, EN_AVATAR_SHAPE shape, int x, int 
 	//this->setEnabled(isEnabled);
 	this->setIcon(QIcon(*avatar));
 	this->setIconSize(size);
-	//setStyleSheet(QString("QPushButton{background-image:url(Resources/QQImage.png);border:none}"));
 }
 
 

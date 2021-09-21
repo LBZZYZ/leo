@@ -13,20 +13,21 @@ public:
 	TCPNet(const char *Ip, const int Port);
 	~TCPNet();
 
-	bool SendData(const char *pszBuffer, const int nSendLen);
+
 	void Connect(const char *Ip, const int Port);
-	void DisConnect(const char *Ip, const int Port);
-	bool RecvData(char *pszBuffer, const int nSendLen);
-	void RecvDataThread(char *pszBuffer, const int nSendLen);
+	void DisConnect();
+
+	bool SendData(const char *pszBuffer, const int nSendLen);
+	bool RecvData(char **recv_buf, int *len);
+	static void RecvDataThread(char *pszBuffer, const int nSendLen);	//Thread work function
 
 private:
 	bool Init();
 	void DeInit();
+	void HandleError(int err);
 
 private:
 	SOCKET client_socket;
-	HANDLE m_hRecvThread;	//  接受连接的线程
-	bool m_bThreadQuitFlag; //  线程退出
 };
 
 #endif //_TCPNET_H_

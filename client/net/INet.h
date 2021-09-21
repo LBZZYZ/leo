@@ -12,9 +12,9 @@ public:
 	virtual ~INet() {}
 
 	virtual void Connect(const char *Ip, const int Port) = 0;
-	virtual void DisConnect(const char *Ip, const int Port) = 0;
+	virtual void DisConnect() = 0;
 	virtual bool SendData(const char *pszBuffer, const int nSendLen) { return false; }
-	virtual bool RecvData(char *pszBuffer, const int nSendLen) { return true; }
+	virtual bool RecvData(char **recv_buf, int *len) = 0;
 
 protected:
 	virtual bool Init() = 0;

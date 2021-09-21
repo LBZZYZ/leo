@@ -1,30 +1,23 @@
 ﻿#pragma once
 #include "INet.h"
 
+//
+// typedef bool (Agency::* CallBack_DealData)(char*, int);
 
-
-class Agency;
-typedef bool (Agency::* CallBack_DealData)(char*, int);
-bool (Agency:: *CallBack)(char*, int) = Agency::DealData;
-
-class Agency :public QObject
+class Agency
 {
-	Q_OBJECT
-
 public:
-	Agency()
-	{ 
-		net = nullptr;
-		thread = nullptr;
-	}
+	Agency(){}
 	virtual ~Agency(){}
 
 public:
 	virtual bool Init() = 0;
 	virtual void DeInit() = 0;
-	static bool DealData(char* pszBuffer, int nLen){}
 
-protected:
-	INet* net;
-	NetThread* thread;
+
+	virtual void CancelEvent() = 0;
+	virtual bool StratEventLoop(char* pszBuffer, int nLen) = 0;
+
+public:
+	INet *net;
 };

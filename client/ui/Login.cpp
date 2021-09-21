@@ -1,12 +1,15 @@
 ﻿#include "login.h"
-#include "../net/Protocol/Protocol.h"
+
+#include <iostream>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QMessagebox>
 #include <qpropertyanimation.h>	
 #include <QFile>
 #include <QPainter>
-#include "../net/TCPAgency.h"
+#include <QSettings>
+#include "../net/EventDispatch.h"
+#include "../net/Protocol.h"
 
 Login::Login(QWidget *parent)
 	: QWidget(parent)
@@ -15,9 +18,11 @@ Login::Login(QWidget *parent)
 
 	ConnectSignalSlot();
 	InitWindow();
-	LoadLocalSavedUser();
+	LoadConfigFile();
 	
 }
+
+const char * Login::ini_path = "D:/wd/leo/client/res/ini/LoginSettings.ini";
 
 void Login::ConnectSignalSlot(void)
 {
@@ -43,8 +48,8 @@ void  Login::login()
 	stru_login_rq.llUserID = ui.m_userNameCom->currentText().toLongLong();
 	stru_login_rq.packtype = PROTOCOL_LOGIN_RQ;
 	Qstringtochar(stru_login_rq.szPassWord, ui.m_passwordlineedit->text(), PASSWORD_SIZE);
-	CTCPAgency* agency = CTCPAgency::GetInstance();
-	agency->DealData((char*)&stru_login_rq, sizeof(STRU_LOGIN_RQ));
+	EventDispatch* dispatcher = EventDispatch::GetInstance();
+	dispatcher->net->SendData((char*)&stru_login_rq, sizeof(STRU_LOGIN_RQ));
 }
 
 void Login::TurnToLoginWindow()
@@ -78,21 +83,24 @@ void Login::RegisterWatchedObject()
 	ui.qLineEdit_PassWord->installEventFilter(this);
 }
 
-void Login::LoadLocalSavedUser()
+void Login::LoadConfigFile()
 {
-	QFile user_info("LoginWindowUserInfo");
-	if (!user_info.open(QIODevice::ReadWrite | QIODevice::Text))
-		return;
-	QTextStream file_paser(&user_info);
-	file_paser.setCodec("UTF-8");
-	while (!file_paser.atEnd())
+	QSettings config_file(QString("D:\\wd\\leo\\client\\res\\ini\\LoginSettings.ini"), QSettings::IniFormat);
+	QSettings* test = new QSettings(QCoreApplication::applicationDirPath()+"\\config.ini", QSettings::IniFormat, this);
+	std::cout << QCoreApplication::applicationDirPath().toStdString() << std::endl;
+	test->setIniCodec("UTF-8");
+	test->setValue("/setting/currentTabIndex", "20");
+	test->sync();
+	const char* remember_password = config_file.value(QString("RememberPassword")).toString().toStdString().c_str();
+	if(remember_password == "true")
 	{
-		QString line = file_paser.readLine();
-		QRegExp pattern("(.*):(.*)");
-		line.indexOf(pattern);
-		ui.m_userNameCom->addItem(pattern.cap(1));
-		account_password[pattern.cap(1)] = pattern.cap(2);
+		ui.m_rememberpw->setChecked(true);
 	}
+	else
+	{
+		ui.m_rememberpw->setChecked(false);
+	}
+
 }
 
 Login::~Login()

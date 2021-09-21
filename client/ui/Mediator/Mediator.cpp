@@ -36,7 +36,7 @@ void Mediator::InitAllNet()
 	CUDPAgency::m_UDPverify->InitVerify();
 
 	//TCP
-	m_pTcpAgency = new CTCPAgency();
+	m_pTcpAgency = new EventDispatch();
 	m_pTcpAgency->Init();
 
 
@@ -198,73 +198,6 @@ void Mediator::IsAdduiExisted(bool result)
 	}
 
 }
-void Mediator::DealSendMsgSlot(char* pszBuffer, int nLen)
-{
-	if (NULL == pszBuffer || nLen <= 0)
-	{
-		qDebug() << "DealSendMsgSlot Error!";
-		return;
-	}
 
-	/*将收到的消息写入文件*/
-	STRU_SEND_MSG_RS *lpv_Msg = (STRU_SEND_MSG_RS*)pszBuffer;
-	char FileName[12] = { 0 };
-	itoa(lpv_Msg->llID, FileName, 10);
-	QFile MsgFile(FileName);
-	MsgFile.open(QFile::WriteOnly | QFile::Append);
-	QTextStream writer(&MsgFile);
-	writer << lpv_Msg->szText << endl;
-	MsgFile.close();
-
-
-}
-
-
-
-/*********************************************
-函数名       : DealFriendList
-函数功能描述 : 处理服务端返回的好友列表
-函数参数     : char * pszBuffer, int nLen
-函数返回值   : void
-函数作者     : 李柄志
-函数创建日期 : 2019.07.23
-函数修改日期 : *
-修改人       : *
-修改原因     : *
-版本         : 1.0
-历史版本     : 无
-*********************************************/
-void Mediator::DealFriendList(char * pszBuffer, int nLen)
-{
-	if (pszBuffer == NULL || nLen <= 0)
-		return;
-	STRU_GET_FRIENDLIST_RS *lpv_Getfriendlistrs = (STRU_GET_FRIENDLIST_RS*)pszBuffer;
-	UiInitMainWindow(lpv_Getfriendlistrs->pFriendList);
-}
-
-
-/*********************************************
-函数名       : GetFriendList
-函数功能描述 : 向服务端获取登录用户的好友列表
-函数参数     : void
-函数返回值   : void
-函数作者     : 李柄志
-函数创建日期 : 2019.07.23
-函数修改日期 : *
-修改人       : *
-修改原因     : *
-版本         : 1.0
-历史版本     : 无
-*********************************************/
-void Mediator::GetFriendList(void)
-{
-	//1.构造获取好友列表请求包
-	STRU_GET_FRIENDLIST_RQ lsv_Getfrinedlistrq;
-	lsv_Getfrinedlistrq.packtype = PROTOCOL_GET_FRIENDLIST_RQ;
-	lsv_Getfrinedlistrq.llUserID = userId;
-	if (false == m_pTcpAgency->DealData((char*)&lsv_Getfrinedlistrq, sizeof(STRU_GET_FRIENDLIST_RQ)))
-		return;
-
-}
 
 

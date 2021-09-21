@@ -437,7 +437,7 @@ QComboBox::down-arrow:on
 </string>
       </property>
       <property name="editable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="currentText">
        <string/>
@@ -779,7 +779,7 @@ QPushButton:hover{
 }</string>
       </property>
       <property name="text">
-       <string notr="true">登     录</string>
+       <string notr="true">登</string>
       </property>
       <property name="shortcut">
        <string/>
@@ -836,11 +836,7 @@ QPushButton:hover{
       </property>
       <property name="styleSheet">
        <string notr="true">min-width:     48px;     
-background-image: url(:/new/prefix1/Resources/QQImage.png);
-min-height:    48px;     
-max-width:     48px;     
-max-height:   48px;    
-border-radius: 24px;         
+       
 
 </string>
       </property>
@@ -2907,8 +2903,6 @@ background-color:#FFFFFF;</string>
   <tabstop>qLineEdit_PassWord</tabstop>
   <tabstop>qLineEdit_PhoneNumber</tabstop>
  </tabstops>
- <resources>
-  <include location="login.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

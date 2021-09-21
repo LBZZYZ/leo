@@ -17,6 +17,14 @@ cmake_minimum_required(VERSION 3.1.0)
 
  add_executable(IM
      net/TCPNet.cpp
+     net/EventDispatch.cpp
+     net/EventHandle.cpp
+     ui/Login.cpp
+     main.cpp
+ )
+
+ qt5_wrap_ui(ui_list 
+    "ui/login.ui"
  )
 
  target_link_libraries(IM Qt5::Widgets)
